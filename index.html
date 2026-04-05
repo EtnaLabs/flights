@@ -185,8 +185,8 @@ const FLIGHTS = {
     { id:"a1b", al:"Azul", dep:"10:45PM", arr:"10:30AM+1", dur:"7h45m", rt:"JFK-LIS", $:450, dt:"Apr 29" }
   ],
   "London->Lisbon": [
+    { id:"2b", al:"Ryanair", dep:"5:05PM", arr:"7:55PM", dur:"2h50m", rt:"STN-LIS", $:58, dt:"Apr 29" },
     { id:"2a", al:"Ryanair", dep:"7:40PM", arr:"10:30PM", dur:"2h50m", rt:"STN-LIS", $:63, dt:"Apr 29" },
-    { id:"2b", al:"Ryanair", dep:"5:05PM", arr:"7:55PM", dur:"2h50m", rt:"STN-LIS", $:64, dt:"Apr 29" },
     { id:"2c", al:"easyJet", dep:"6:10PM", arr:"9:00PM", dur:"2h50m", rt:"LTN-LIS", $:68, dt:"Apr 29" },
     { id:"2e", al:"TAP", dep:"8:00AM", arr:"10:50AM", dur:"2h50m", rt:"LHR-LIS", $:111, dt:"Apr 29" }
   ],
@@ -220,7 +220,7 @@ const EVENTS = {
 // Per-person routes: array of { from, to, date }
 const FED_ROUTE = [
   { from: "NYC", to: "London", date: "Apr 26", selected: "1d", booked: false },
-  { from: "London", to: "Lisbon", date: "Apr 29", selected: "2a", booked: false },
+  { from: "London", to: "Lisbon", date: "Apr 29", selected: "2b", booked: true },
   { from: "Lisbon", to: "Berlin", date: "May 6", selected: "3a", booked: false },
   { from: "Berlin", to: "Zurich", date: "May 9", selected: "4a", booked: false },
   { from: "Zurich", to: "Catania", date: "May 11", selected: "5a", booked: false },
