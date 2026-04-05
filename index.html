@@ -55,47 +55,47 @@
 
   /* ---- CENTER COLUMN ---- */
   .center-col { display: flex; flex-direction: column; align-items: center; position: relative; }
-  .center-line { width: 2px; background: var(--line); flex: 1; min-height: 12px; }
+  .center-line { width: 2px; background: var(--line); flex: 1; min-height: 8px; }
 
-  .center-city {
-    position: relative; z-index: 2; text-align: center; padding: 12px 8px;
+  /* City node */
+  .city-node {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    position: relative; z-index: 2;
   }
-  .center-city .dot {
-    width: 14px; height: 14px; border-radius: 50%; background: var(--dot);
+  .city-node .dot {
+    width: 12px; height: 12px; border-radius: 50%; background: var(--dot);
     border: 3px solid var(--bg); box-shadow: 0 0 0 2px var(--dot);
-    margin: 0 auto 6px;
+    flex-shrink: 0;
   }
-  .center-city .city-name {
-    font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em;
-    line-height: 1.2;
+  .city-node .city-info { min-width: 0; }
+  .city-node .city-name {
+    font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2;
   }
-  .center-city .city-dates {
-    font-size: 0.85rem; font-weight: 600; color: var(--text); margin-top: 2px;
-  }
-  .center-city .city-stay {
+  .city-node .city-sub {
     font-size: 0.72rem; color: var(--text-muted); margin-top: 1px;
   }
-  .center-city .city-event {
+  .city-node .city-event {
     display: inline-block; font-size: 0.65rem; font-weight: 600;
-    padding: 2px 8px; border-radius: 4px; margin-top: 4px;
+    padding: 2px 8px; border-radius: 4px; margin-top: 3px;
     background: #dbeafe; color: #1d4ed8; text-decoration: none;
   }
-  .center-city .city-event:hover { text-decoration: underline; }
+  .city-node .city-event:hover { text-decoration: underline; }
   @media (prefers-color-scheme: dark) {
-    .center-city .city-event { background: #1e3a5f; color: #93c5fd; }
+    .city-node .city-event { background: #1e3a5f; color: #93c5fd; }
   }
-  .center-city .city-hotel {
-    font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;
+  .city-node .city-hotel {
+    font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;
     cursor: pointer; transition: color 0.15s;
   }
-  .center-city .city-hotel:hover { color: var(--accent); }
-  .center-city.dimmed { opacity: 0.3; }
+  .city-node .city-hotel:hover { color: var(--accent); }
+  .city-node.dimmed { opacity: 0.3; }
 
-  /* Flight connector in center */
-  .center-flight { padding: 4px 0; }
-  .center-flight .plane-icon {
-    font-size: 0.9rem; color: var(--text-muted);
+  /* Arrow connector in center */
+  .center-arrow {
+    padding: 2px 0; font-size: 0.78rem; color: var(--text-muted); font-weight: 600;
+    display: flex; align-items: center; gap: 4px;
   }
+  .center-arrow .arrow-date { font-weight: 700; color: var(--text); font-size: 0.8rem; }
 
   /* ---- PERSON COLUMNS ---- */
   .person-col { display: flex; flex-direction: column; justify-content: center; }
@@ -443,24 +443,75 @@ function render() {
   for (let i = 0; i < cities.length; i++) {
     const city = cities[i];
     const prevCity = i > 0 ? cities[i - 1] : null;
+    const nextCity = i < cities.length - 1 ? cities[i + 1] : null;
     const eitherHas = fedCities.has(city) || aniCities.has(city);
 
-    // ---- FLIGHT CONNECTOR ROW ----
-    if (prevCity) {
-      const fedLeg = personLegBetween('fed', prevCity, city);
-      const aniLeg = personLegBetween('ani', prevCity, city);
+    // ---- CITY NODE ----
+    const arrLeg = legArrivingAt(city);
+    const node = document.createElement('div');
+    node.className = 'city-node' + (!eitherHas ? ' dimmed' : '');
 
-      // Left: Federico flight
+    let subParts = [];
+    if (arrLeg && arrLeg.stayNights) subParts.push(arrLeg.stayNights + ' nights');
+    let hotelHtml = '';
+    if (HOTELS_DB[city] && eitherHas) {
+      const h = getSelectedHotel(city);
+      if (h) hotelHtml = `<div class="city-hotel" data-city="${city}">🏨 ${h.name} · $${h.ppn}/n · <b>$${h.ppn * h.nights}</b></div>`;
+    }
+    let eventHtml = '';
+    if (arrLeg && arrLeg.event && arrLeg.event.name && arrLeg.event.name !== 'Return home' && arrLeg.event.name !== 'Sicily stay') {
+      const evText = arrLeg.event.date ? arrLeg.event.date + ' · ' + arrLeg.event.name : arrLeg.event.name;
+      eventHtml = arrLeg.event.link
+        ? `<a class="city-event" href="${arrLeg.event.link}" target="_blank">${evText}</a>`
+        : `<span class="city-event">${evText}</span>`;
+    }
+
+    node.innerHTML = `
+      <div class="dot"></div>
+      <div class="city-info">
+        <div class="city-name">${city}</div>
+        ${subParts.length ? `<div class="city-sub">${subParts.join(' · ')}</div>` : ''}
+        ${eventHtml}
+        ${hotelHtml}
+      </div>
+    `;
+    const hotelEl = node.querySelector('.city-hotel');
+    if (hotelEl) hotelEl.onclick = () => openHotelDropdown(city);
+
+    // Wrap in grid row: left flight cards | center node | right flight cards
+    const leftCity = document.createElement('div');
+    leftCity.className = 'person-col left';
+    const centerCity = document.createElement('div');
+    centerCity.className = 'center-col';
+    if (i > 0) centerCity.appendChild(mkLine());
+    centerCity.appendChild(node);
+    const rightCity = document.createElement('div');
+    rightCity.className = 'person-col right';
+
+    timeline.appendChild(leftCity);
+    timeline.appendChild(centerCity);
+    timeline.appendChild(rightCity);
+
+    // ---- FLIGHT ARROW ROW (to next city) ----
+    if (nextCity) {
+      const fedLeg = personLegBetween('fed', city, nextCity);
+      const aniLeg = personLegBetween('ani', city, nextCity);
+      const leg = getLeg(city + '->' + nextCity);
+      const dateLabel = leg ? leg.date : '';
+
       const leftFlight = document.createElement('div');
       leftFlight.className = 'person-col left';
       leftFlight.appendChild(renderLegCard('fed', fedLeg));
 
-      // Center: plane icon + line
       const centerFlight = document.createElement('div');
       centerFlight.className = 'center-col';
-      centerFlight.innerHTML = `<div class="center-line"></div><div class="center-flight"><span class="plane-icon">✈</span></div><div class="center-line"></div>`;
+      centerFlight.appendChild(mkLine());
+      const arrow = document.createElement('div');
+      arrow.className = 'center-arrow';
+      arrow.innerHTML = `<span class="arrow-date">${dateLabel}</span> ↓`;
+      centerFlight.appendChild(arrow);
+      centerFlight.appendChild(mkLine());
 
-      // Right: Anissa flight
       const rightFlight = document.createElement('div');
       rightFlight.className = 'person-col right';
       rightFlight.appendChild(renderLegCard('ani', aniLeg));
@@ -469,65 +520,6 @@ function render() {
       timeline.appendChild(centerFlight);
       timeline.appendChild(rightFlight);
     }
-
-    // ---- CITY ROW ----
-    const arrLeg = legArrivingAt(city);
-
-    // Left: empty for city row
-    const leftCity = document.createElement('div');
-    leftCity.className = 'person-col left';
-
-    // Center: city name, dates, stay info, event, hotel
-    const centerCity = document.createElement('div');
-    centerCity.className = 'center-col';
-    const cc = document.createElement('div');
-    cc.className = 'center-city' + (!eitherHas ? ' dimmed' : '');
-
-    let dateStr = '';
-    let stayStr = '';
-    if (arrLeg) {
-      if (arrLeg.stayDates) dateStr = arrLeg.stayDates;
-      if (arrLeg.stayNights) stayStr = arrLeg.stayNights + ' nights';
-    }
-
-    let eventHtml = '';
-    if (arrLeg && arrLeg.event && arrLeg.event.name && arrLeg.event.name !== 'Return home' && arrLeg.event.name !== 'Sicily stay') {
-      const link = arrLeg.event.link
-        ? `<a class="city-event" href="${arrLeg.event.link}" target="_blank">${arrLeg.event.date ? arrLeg.event.date + ' · ' : ''}${arrLeg.event.name}</a>`
-        : `<span class="city-event">${arrLeg.event.date ? arrLeg.event.date + ' · ' : ''}${arrLeg.event.name}</span>`;
-      eventHtml = link;
-    }
-
-    let hotelHtml = '';
-    if (HOTELS_DB[city] && eitherHas) {
-      const h = getSelectedHotel(city);
-      if (h) hotelHtml = `<div class="city-hotel" data-city="${city}">🏨 ${h.name} · <b>$${h.ppn * h.nights}</b></div>`;
-    }
-
-    cc.innerHTML = `
-      <div class="dot"></div>
-      <div class="city-name">${city}</div>
-      ${dateStr ? `<div class="city-dates">${dateStr}</div>` : ''}
-      ${stayStr ? `<div class="city-stay">${stayStr}</div>` : ''}
-      ${eventHtml}
-      ${hotelHtml}
-    `;
-    centerCity.appendChild(document.createElement('div')); // spacer
-    centerCity.appendChild(cc);
-
-    // Wire up hotel click
-    const hotelEl = cc.querySelector('.city-hotel');
-    if (hotelEl) {
-      hotelEl.onclick = () => openHotelDropdown(city);
-    }
-
-    // Right: empty for city row
-    const rightCity = document.createElement('div');
-    rightCity.className = 'person-col right';
-
-    timeline.appendChild(leftCity);
-    timeline.appendChild(centerCity);
-    timeline.appendChild(rightCity);
   }
 
   // Add leg buttons
@@ -544,6 +536,12 @@ function render() {
   timeline.appendChild(addR);
 
   updateTotals();
+}
+
+function mkLine() {
+  const d = document.createElement('div');
+  d.className = 'center-line';
+  return d;
 }
 
 function renderLegCard(person, legKey) {
@@ -573,7 +571,7 @@ function renderLegCard(person, legKey) {
     <button class="remove-btn" title="Remove leg">×</button>
   `;
   card.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); removeLeg(person, legKey); };
-  card.onclick = () => openFlightDropdown(person, legKey);
+  card.onclick = () => window.open(buildSearchLink(flight, leg), '_blank');
   return card;
 }
 
