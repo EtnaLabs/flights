@@ -271,7 +271,7 @@ function openDD(legIdx) {
         <div class="radio"></div>
         <div class="details">
           <div><span class="airline">${f.al}</span> ${ic?'<span class="cheap-tag">Cheapest</span>':''}</div>
-          <div class="times">${f.dt} · ${f.dep} → ${f.arr} · ${f.dur} · ${f.rt}</div>
+          <div class="times"><a href="${link}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);text-decoration:none;font-weight:600">${f.dt}</a> · ${f.dep} → ${f.arr} · ${f.dur} · ${f.rt}</div>
           ${f.note?`<div class="note">${f.note}</div>`:''}
         </div>
         <a href="${link}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:0.7rem">↗</a>
