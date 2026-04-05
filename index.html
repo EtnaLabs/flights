@@ -207,6 +207,14 @@ const FLIGHTS = {
     { id:"lc1", al:"Ryanair", dep:"6:30AM", arr:"10:30AM", dur:"3h", rt:"LIS-CTA", $:50, dt:"May 5" },
     { id:"lc2", al:"easyJet", dep:"11:00AM", arr:"3:00PM", dur:"3h", rt:"LIS-CTA", $:75, dt:"May 5" }
   ],
+  "Zurich->Palermo": [
+    { id:"zp1", al:"easyJet", dep:"6:00AM", arr:"8:30AM", dur:"2h30m", rt:"ZRH-PMO", $:90, dt:"May 10" },
+    { id:"zp2", al:"SWISS", dep:"12:00PM", arr:"2:25PM", dur:"2h25m", rt:"ZRH-PMO", $:150, dt:"May 10" }
+  ],
+  "Berlin->Palermo": [
+    { id:"bp1", al:"Ryanair", dep:"6:00AM", arr:"9:00AM", dur:"2h30m", rt:"BER-PMO", $:60, dt:"May 10" },
+    { id:"bp2", al:"easyJet", dep:"10:00AM", arr:"1:00PM", dur:"2h30m", rt:"BER-PMO", $:80, dt:"May 10" }
+  ],
   "Zurich->Catania": [
     { id:"5a", al:"easyJet", dep:"6:00AM", arr:"8:30AM", dur:"2h30m", rt:"ZRH-CTA", $:90, dt:"May 11" },
     { id:"5b", al:"SWISS", dep:"12:00PM", arr:"2:25PM", dur:"2h25m", rt:"ZRH-CTA", $:150, dt:"May 11" }
@@ -214,6 +222,10 @@ const FLIGHTS = {
   "Catania->NYC":   [
     { id:"6b", al:"Delta", dep:"10:00AM", arr:"2:16PM", dur:"10h16m", rt:"CTA-JFK", $:1183, dt:"May 20–30", note:"4x/week" },
     { id:"6a", al:"United", dep:"9:45AM", arr:"2:05PM", dur:"10h20m", rt:"PMO-EWR", $:1286, dt:"May 20–30", note:"From Palermo" }
+  ],
+  "Palermo->NYC":   [
+    { id:"6a", al:"United", dep:"9:45AM", arr:"2:05PM", dur:"10h20m", rt:"PMO-EWR", $:1286, dt:"May 20–30", note:"Mon/Thu/Sat" },
+    { id:"6b2", al:"Delta via Rome", dep:"7:00AM", arr:"3:00PM", dur:"14h", rt:"PMO-FCO-JFK", $:900, dt:"May 20–30", note:"1 stop" }
   ]
 };
 
@@ -222,7 +234,8 @@ const EVENTS = {
   "Lisbon":  { date: "May 1", name: "Lisbon event", link: "https://lu.ma/cicip0jl", stay: "Airbnb", stayLink: "https://www.airbnb.com/trips/v1/reservation-details/ro/RESERVATION2_CHECKIN/HM3H32K3QD" },
   "Berlin":  { date: "May 6", name: "Berlin event" },
   "Zurich":  { date: "May 9", name: "Zurich event", link: "https://lu.ma/68ig9kd0" },
-  "Catania": { date: "May 11–22", name: "Sicily stay" }
+  "Catania": { date: "May 11–22", name: "Sicily stay" },
+  "Palermo": { date: "May 10–22", name: "Sicily stay" }
 };
 
 // Per-person routes: array of { from, to, date }
@@ -231,14 +244,15 @@ const FED_ROUTE = [
   { from: "London", to: "Lisbon", date: "Apr 29", selected: "2b", booked: true },
   { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true },
   { from: "Berlin", to: "Zurich", date: "May 8", selected: "4f", booked: true },
-  { from: "Zurich", to: "Catania", date: "May 11", selected: "5a", booked: false },
-  { from: "Catania", to: "NYC", date: "May 20–30", selected: "6b", booked: false }
+  { from: "Zurich", to: "Palermo", date: "May 10", selected: "zp1", booked: false },
+  { from: "Palermo", to: "NYC", date: "May 20–30", selected: "6a", booked: false }
 ];
 
 const ANI_ROUTE = [
   { from: "NYC", to: "Lisbon", date: "Apr 29", selected: "a1a", booked: false },
-  { from: "Lisbon", to: "Catania", date: "May 5", selected: "lc1", booked: false },
-  { from: "Catania", to: "NYC", date: "May 20–30", selected: "6b", booked: false }
+  { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true },
+  { from: "Berlin", to: "Palermo", date: "May 10", selected: "bp1", booked: false },
+  { from: "Palermo", to: "NYC", date: "May 20–30", selected: "6a", booked: false }
 ];
 
 const ROUTES = { fed: FED_ROUTE, ani: ANI_ROUTE };
@@ -394,10 +408,6 @@ function render() {
       // Fed side
       const fedSide = document.createElement('div');
       fedSide.className = 'branch-side';
-      const fedLabel = document.createElement('div');
-      fedLabel.className = 'branch-label';
-      fedLabel.innerHTML = `<img src="${FED_IMG}"> Federico`;
-      fedSide.appendChild(fedLabel);
       step.fedLegs.forEach((leg, i) => {
         fedSide.appendChild(mkFlight(leg, 'fed'));
         if (leg.to !== step.mergeCity) {
@@ -410,10 +420,6 @@ function render() {
       // Ani side
       const aniSide = document.createElement('div');
       aniSide.className = 'branch-side';
-      const aniLabel = document.createElement('div');
-      aniLabel.className = 'branch-label';
-      aniLabel.innerHTML = `<img src="${ANI_IMG}"> Anissa`;
-      aniSide.appendChild(aniLabel);
       step.aniLegs.forEach((leg, i) => {
         aniSide.appendChild(mkFlight(leg, 'ani'));
         if (leg.to !== step.mergeCity) {
