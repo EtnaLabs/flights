@@ -25,7 +25,7 @@
     background: var(--bg); color: var(--text);
     line-height: 1.5; min-height: 100vh; padding: 1.5rem 1rem 4rem;
   }
-  .container { max-width: 1100px; margin: 0 auto; }
+  .container { max-width: 1200px; margin: 0 auto; }
 
   /* Header */
   .header { text-align: center; margin-bottom: 2rem; }
@@ -38,90 +38,143 @@
   }
   .totals img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 
-  /* Dual timeline */
-  .dual-timeline { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; }
+  /* Column headers */
+  .col-headers {
+    display: grid; grid-template-columns: 1fr 200px 1fr; gap: 0;
+    margin-bottom: 0.5rem; padding: 0 4px;
+  }
+  .col-header {
+    display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+  }
+  .col-header.left { justify-content: flex-end; }
+  .col-header.right { justify-content: flex-start; }
+  .col-header.center { justify-content: center; }
+  .col-header img {
+    width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+    border: 2px solid var(--border);
+  }
+  .col-header .name { font-weight: 700; font-size: 0.95rem; }
 
-  /* Center column */
-  .center-col { display: flex; flex-direction: column; align-items: center; }
+  /* Dual timeline grid */
+  .dual-timeline { display: grid; grid-template-columns: 1fr 200px 1fr; gap: 0; }
+
+  /* ---- CENTER COLUMN ---- */
+  .center-col { display: flex; flex-direction: column; align-items: center; position: relative; }
+  .center-line { width: 2px; background: var(--line); flex: 1; min-height: 12px; }
+
   .center-city {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 8px 0; position: relative; z-index: 2;
+    position: relative; z-index: 2; text-align: center; padding: 12px 8px;
   }
   .center-city .dot {
     width: 14px; height: 14px; border-radius: 50%; background: var(--dot);
     border: 3px solid var(--bg); box-shadow: 0 0 0 2px var(--dot);
+    margin: 0 auto 6px;
   }
-  .center-city .city-label {
-    font-size: 0.7rem; font-weight: 700; color: var(--text-muted);
-    writing-mode: vertical-lr; text-orientation: mixed;
-    letter-spacing: 0.05em; margin-top: 4px;
+  .center-city .city-name {
+    font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em;
+    line-height: 1.2;
   }
-  .center-line { width: 2px; background: var(--line); flex: 1; min-height: 20px; }
+  .center-city .city-dates {
+    font-size: 0.85rem; font-weight: 600; color: var(--text); margin-top: 2px;
+  }
+  .center-city .city-stay {
+    font-size: 0.72rem; color: var(--text-muted); margin-top: 1px;
+  }
+  .center-city .city-event {
+    display: inline-block; font-size: 0.65rem; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px; margin-top: 4px;
+    background: #dbeafe; color: #1d4ed8; text-decoration: none;
+  }
+  .center-city .city-event:hover { text-decoration: underline; }
+  @media (prefers-color-scheme: dark) {
+    .center-city .city-event { background: #1e3a5f; color: #93c5fd; }
+  }
+  .center-city.dimmed { opacity: 0.3; }
 
-  /* Person column */
-  .person-col { display: flex; flex-direction: column; }
+  /* Flight connector in center */
+  .center-flight { padding: 4px 0; }
+  .center-flight .plane-icon {
+    font-size: 0.9rem; color: var(--text-muted);
+  }
+
+  /* ---- PERSON COLUMNS ---- */
+  .person-col { display: flex; flex-direction: column; justify-content: center; }
   .person-col.left { align-items: flex-end; text-align: right; }
   .person-col.right { align-items: flex-start; text-align: left; }
 
-  .person-header {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;
-    padding: 0 8px;
-  }
-  .person-col.left .person-header { flex-direction: row-reverse; }
-  .person-header img {
-    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
-    border: 2px solid var(--border);
-  }
-  .person-header .name { font-weight: 700; font-size: 1rem; }
-
-  /* Leg card */
+  /* Leg card (flight) */
   .leg-card {
-    padding: 6px 12px; margin: 2px 0; border-radius: 10px;
+    padding: 8px 14px; margin: 4px 8px; border-radius: 12px;
     background: var(--bg-card); border: 1px solid var(--border);
-    font-size: 0.82rem; position: relative; min-width: 180px; max-width: 320px;
-    cursor: pointer; transition: border-color 0.15s;
+    font-size: 0.82rem; position: relative; min-width: 200px; max-width: 340px;
+    cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .leg-card:hover { border-color: var(--accent); }
-  .leg-card .flight-main { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .leg-card .airline { font-weight: 600; }
-  .leg-card .price { font-weight: 700; }
-  .leg-card .meta { color: var(--text-muted); font-size: 0.75rem; margin-top: 1px; }
-  .leg-card .event-tag {
+  .leg-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(59,130,246,0.1); }
+  .leg-card .flight-row { display: flex; align-items: center; gap: 8px; }
+  .leg-card .airline { font-weight: 700; font-size: 0.85rem; }
+  .leg-card .price { font-weight: 800; font-size: 0.95rem; margin-left: auto; }
+  .leg-card .meta { color: var(--text-muted); font-size: 0.75rem; margin-top: 2px; }
+  .leg-card .route-tag {
     display: inline-block; font-size: 0.65rem; font-weight: 600;
-    padding: 1px 6px; border-radius: 4px; margin-top: 3px;
-    background: #dbeafe; color: #1d4ed8;
-  }
-  @media (prefers-color-scheme: dark) {
-    .leg-card .event-tag { background: #1e3a5f; color: #93c5fd; }
+    padding: 1px 6px; border-radius: 4px;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text-muted); margin-right: 4px;
   }
 
-  /* Grayed out placeholder */
+  /* Hotel line under flight card */
+  .hotel-line {
+    font-size: 0.72rem; color: var(--text-muted); padding: 0 12px;
+    margin: 0 8px 2px; cursor: pointer; transition: color 0.15s;
+  }
+  .hotel-line:hover { color: var(--accent); }
+  .hotel-line .hotel-name { font-weight: 600; }
+
+  /* Grayed placeholder */
   .leg-placeholder {
-    padding: 6px 12px; margin: 2px 0; border-radius: 10px;
-    border: 1px dashed var(--border); min-height: 42px; min-width: 180px; max-width: 320px;
+    padding: 8px 14px; margin: 4px 8px; border-radius: 12px;
+    border: 1px dashed var(--border); min-height: 46px; min-width: 200px; max-width: 340px;
     display: flex; align-items: center; justify-content: center;
-    color: var(--text-muted); font-size: 0.75rem; opacity: 0.4;
+    color: var(--text-muted); font-size: 0.75rem; opacity: 0.35;
   }
 
-  /* City row container */
-  .city-row-left, .city-row-right { padding: 4px 8px; }
-
-  /* Stay info */
-  .stay-info {
-    font-size: 0.72rem; color: var(--text-muted); padding: 0 12px; margin-bottom: 2px;
+  /* Remove button on card */
+  .remove-btn {
+    position: absolute; top: 4px; right: 6px; width: 18px; height: 18px;
+    border: none; background: none; color: var(--text-muted); font-size: 0.75rem;
+    cursor: pointer; border-radius: 4px; display: flex; align-items: center;
+    justify-content: center; opacity: 0; transition: opacity 0.15s;
   }
-  .stay-info .hotel-name { font-weight: 500; }
+  .leg-card:hover .remove-btn { opacity: 0.5; }
+  .remove-btn:hover { opacity: 1 !important; color: #ef4444; }
 
-  /* Flight dropdown */
+  /* Add leg button */
+  .add-city-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 14px; margin: 8px; border-radius: 8px;
+    border: 1px dashed var(--border); background: none; color: var(--text-muted);
+    font-size: 0.75rem; cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .add-city-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Download button */
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg-card); color: var(--text); font-size: 0.85rem;
+    font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 1.5rem;
+    transition: all 0.15s;
+  }
+  .dl-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---- DROPDOWN MODAL ---- */
   .dropdown-overlay {
     display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.3); z-index: 100;
   }
-  .dropdown-overlay.open { display: block; }
+  .dropdown-overlay.open { display: flex; align-items: center; justify-content: center; }
   .dropdown-panel {
-    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
     background: var(--bg); border: 1px solid var(--border); border-radius: 14px;
-    box-shadow: var(--shadow); z-index: 101; width: 420px; max-width: 92vw;
+    box-shadow: var(--shadow); z-index: 101; width: 440px; max-width: 92vw;
     max-height: 80vh; overflow-y: auto;
   }
   .dropdown-panel h3 {
@@ -160,59 +213,22 @@
     flex-shrink: 0; padding: 2px 8px; border-radius: 4px;
   }
   .dd-option .opt-book:hover { text-decoration: underline; }
-  .dd-section-title {
-    padding: 8px 16px 4px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.05em;
-  }
 
-  /* Add/remove city */
-  .add-city-btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 4px 12px; margin: 8px 8px; border-radius: 8px;
-    border: 1px dashed var(--border); background: none; color: var(--text-muted);
-    font-size: 0.75rem; cursor: pointer; font-family: inherit;
-    transition: all 0.15s;
+  @media (max-width: 800px) {
+    .dual-timeline, .col-headers { grid-template-columns: 1fr 140px 1fr; }
+    .center-city .city-name { font-size: 0.95rem; }
+    .leg-card, .leg-placeholder { min-width: 130px; font-size: 0.75rem; }
+    .leg-card .price { font-size: 0.85rem; }
   }
-  .add-city-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .remove-btn {
-    position: absolute; top: 4px; right: 6px; width: 16px; height: 16px;
-    border: none; background: none; color: var(--text-muted); font-size: 0.7rem;
-    cursor: pointer; border-radius: 3px; display: flex; align-items: center;
-    justify-content: center; opacity: 0; transition: opacity 0.15s;
-  }
-  .leg-card:hover .remove-btn { opacity: 0.5; }
-  .remove-btn:hover { opacity: 1 !important; color: #ef4444; }
-
-  /* Download button */
-  .dl-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--bg-card); color: var(--text); font-size: 0.85rem;
-    font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 1.5rem;
-    transition: all 0.15s;
-  }
-  .dl-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Add city modal */
-  .modal-form { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-  .modal-form input, .modal-form select {
-    font-family: inherit; font-size: 0.85rem; padding: 8px 12px;
-    border: 1px solid var(--border); border-radius: 8px;
-    background: var(--bg); color: var(--text);
-  }
-  .modal-form .form-row { display: flex; gap: 8px; }
-  .modal-form .form-row input { flex: 1; }
-  .modal-form button {
-    padding: 8px 16px; border-radius: 8px; border: none;
-    background: var(--accent); color: #fff; font-size: 0.85rem;
-    font-weight: 600; cursor: pointer; font-family: inherit;
-  }
-  .modal-form button:hover { opacity: 0.85; }
-
-  @media (max-width: 700px) {
-    .dual-timeline { grid-template-columns: 1fr 30px 1fr; }
-    .leg-card, .leg-placeholder { min-width: 120px; font-size: 0.75rem; }
-    .person-header img { width: 28px; height: 28px; }
+  @media (max-width: 550px) {
+    .dual-timeline, .col-headers { grid-template-columns: 1fr 100px 1fr; }
+    .center-city .city-name { font-size: 0.8rem; }
+    .center-city .city-dates { font-size: 0.7rem; }
+    .leg-card, .leg-placeholder { min-width: 100px; padding: 6px 8px; margin: 2px 4px; }
+    .leg-card .airline { font-size: 0.72rem; }
+    .leg-card .price { font-size: 0.78rem; }
+    .leg-card .meta { font-size: 0.65rem; }
+    .hotel-line { font-size: 0.65rem; }
   }
 </style>
 </head>
@@ -233,6 +249,19 @@
     </div>
   </div>
 
+  <!-- Column headers -->
+  <div class="col-headers">
+    <div class="col-header left">
+      <span class="name">Federico</span>
+      <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/fed.jpg" alt="Federico">
+    </div>
+    <div class="col-header center"></div>
+    <div class="col-header right">
+      <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/anissa.jpg" alt="Anissa">
+      <span class="name">Anissa</span>
+    </div>
+  </div>
+
   <div class="dual-timeline" id="timeline"></div>
 
   <div style="text-align:center">
@@ -247,12 +276,12 @@
 
 <script>
 // ===== DATA =====
-const ALL_CITIES = ["New York City", "London", "Lisbon", "Berlin", "Zurich", "Catania"];
-const SHORT = { "New York City": "NYC", "London": "LDN", "Lisbon": "LIS", "Berlin": "BER", "Zurich": "ZRH", "Catania": "CTA" };
+const SHORT = { "New York City": "NYC", "London": "London", "Lisbon": "Lisbon", "Berlin": "Berlin", "Zurich": "Zurich", "Catania": "Catania" };
 
 const LEGS_DB = [
   {
     from: "New York City", to: "London", date: "Apr 26",
+    stayDates: "Apr 26–28", stayNights: 2,
     event: { name: "AI London 1.0", date: "Apr 28", link: "https://lu.ma/ai-london-1.0" },
     flights: [
       { id: "1d", airline: "JetBlue", dep: "8:45AM", arr: "8:45PM", dur: "7h", route: "JFK-LHR", price: 375, date: "Apr 26" },
@@ -264,6 +293,7 @@ const LEGS_DB = [
   },
   {
     from: "London", to: "Lisbon", date: "Apr 29",
+    stayDates: "Apr 29 – May 6", stayNights: 7,
     event: { name: "Lisbon event", date: "May 1", link: "https://lu.ma/cicip0jl" },
     flights: [
       { id: "2a", airline: "Ryanair", dep: "7:40PM", arr: "10:30PM", dur: "2h50m", route: "STN-LIS", price: 63, date: "Apr 29" },
@@ -275,6 +305,7 @@ const LEGS_DB = [
   },
   {
     from: "Lisbon", to: "Berlin", date: "May 6",
+    stayDates: "May 6–9", stayNights: 3,
     event: { name: "Berlin event", date: "May 7" },
     flights: [
       { id: "3a", airline: "Ryanair", dep: "6:30AM", arr: "11:30AM", dur: "3h30m", route: "LIS-BER", price: 45, date: "May 6" },
@@ -283,6 +314,7 @@ const LEGS_DB = [
   },
   {
     from: "Berlin", to: "Zurich", date: "May 9",
+    stayDates: "May 9–11", stayNights: 2,
     event: { name: "Zurich event", date: "May 12 (tbd)", link: "https://lu.ma/68ig9kd0" },
     flights: [
       { id: "4a", airline: "easyJet", dep: "8:35AM", arr: "10:05AM", dur: "1h30m", route: "BER-ZRH", price: 67, date: "May 9" },
@@ -292,18 +324,19 @@ const LEGS_DB = [
   },
   {
     from: "Zurich", to: "Catania", date: "May 11",
-    event: { name: "Sicily stay", date: "May 11-22" },
+    stayDates: "May 11–22", stayNights: 11,
+    event: { name: "Sicily stay", date: "May 11–22" },
     flights: [
       { id: "5a", airline: "easyJet", dep: "6:00AM", arr: "8:30AM", dur: "2h30m", route: "ZRH-CTA", price: 90, date: "May 11" },
       { id: "5b", airline: "SWISS", dep: "12:00PM", arr: "2:25PM", dur: "2h25m", route: "ZRH-CTA", price: 150, date: "May 11" }
     ]
   },
   {
-    from: "Catania", to: "New York City", date: "May 20-30",
+    from: "Catania", to: "New York City", date: "May 20–30",
     event: { name: "Return home" },
     flights: [
-      { id: "6b", airline: "Delta", dep: "10:00AM", arr: "2:16PM", dur: "10h16m", route: "CTA-JFK", price: 1183, date: "May 20-30", note: "4x/week" },
-      { id: "6a", airline: "United", dep: "9:45AM", arr: "2:05PM", dur: "10h20m", route: "PMO-EWR", price: 1286, date: "May 20-30", note: "From Palermo" }
+      { id: "6b", airline: "Delta", dep: "10:00AM", arr: "2:16PM", dur: "10h16m", route: "CTA-JFK", price: 1183, date: "May 20–30", note: "4x/week" },
+      { id: "6a", airline: "United", dep: "9:45AM", arr: "2:05PM", dur: "10h20m", route: "PMO-EWR", price: 1286, date: "May 20–30", note: "From Palermo" }
     ]
   }
 ];
@@ -339,17 +372,14 @@ let state = loadState();
 
 function defaultState() {
   const s = { fed: { legs: [], hotels: {}, selected: {} }, ani: { legs: [], hotels: {}, selected: {} } };
-  // Both start with same itinerary
   LEGS_DB.forEach(leg => {
     const key = leg.from + '->' + leg.to;
     s.fed.legs.push(key);
     s.ani.legs.push(key);
-    // Select cheapest flight
     const cheapest = leg.flights.reduce((a, b) => a.price < b.price ? a : b);
     s.fed.selected[key] = cheapest.id;
     s.ani.selected[key] = cheapest.id;
   });
-  // Select cheapest hotels
   for (const city in HOTELS_DB) {
     const cheapest = HOTELS_DB[city].reduce((a, b) => a.ppn < b.ppn ? a : b);
     s.fed.hotels[city] = cheapest.id;
@@ -357,7 +387,6 @@ function defaultState() {
   }
   return s;
 }
-
 function loadState() {
   try { const s = localStorage.getItem(STORAGE); if (s) return JSON.parse(s); } catch(e) {}
   return defaultState();
@@ -365,10 +394,7 @@ function loadState() {
 function saveState() {
   try { localStorage.setItem(STORAGE, JSON.stringify(state)); } catch(e) {}
 }
-
-function getLeg(key) {
-  return LEGS_DB.find(l => (l.from + '->' + l.to) === key);
-}
+function getLeg(key) { return LEGS_DB.find(l => (l.from + '->' + l.to) === key); }
 function getSelectedFlight(person, legKey) {
   const leg = getLeg(legKey);
   if (!leg) return null;
@@ -381,14 +407,12 @@ function getSelectedHotel(person, city) {
   const id = state[person].hotels[city];
   return hotels.find(h => h.id === id) || hotels[0];
 }
-
 function personTotal(person) {
   let flights = 0, hotels = 0;
   state[person].legs.forEach(key => {
     const f = getSelectedFlight(person, key);
     if (f) flights += f.price;
   });
-  // Cities this person visits (destinations of their legs, excluding NYC)
   const cities = new Set();
   state[person].legs.forEach(key => {
     const leg = getLeg(key);
@@ -400,20 +424,14 @@ function personTotal(person) {
   });
   return { flights, hotels, total: flights + hotels };
 }
-
-// All cities in order, union of both people's routes
 function allCitiesInOrder() {
-  const ordered = [];
-  const seen = new Set();
-  // Use LEGS_DB order as canonical
+  const ordered = [], seen = new Set();
   LEGS_DB.forEach(leg => {
     if (!seen.has(leg.from)) { seen.add(leg.from); ordered.push(leg.from); }
     if (!seen.has(leg.to)) { seen.add(leg.to); ordered.push(leg.to); }
   });
   return ordered;
 }
-
-// Cities a person visits
 function personCities(person) {
   const cities = new Set();
   state[person].legs.forEach(key => {
@@ -422,96 +440,112 @@ function personCities(person) {
   });
   return cities;
 }
-
-// Get leg between two consecutive cities for a person
 function personLegBetween(person, from, to) {
   const key = from + '->' + to;
-  if (state[person].legs.includes(key)) return key;
-  return null;
+  return state[person].legs.includes(key) ? key : null;
+}
+// Find the leg whose destination is this city (for stay/event info)
+function legArrivingAt(city) {
+  return LEGS_DB.find(l => l.to === city);
 }
 
 // ===== RENDER =====
 function render() {
   const timeline = document.getElementById('timeline');
   timeline.innerHTML = '';
-
   const cities = allCitiesInOrder();
   const fedCities = personCities('fed');
   const aniCities = personCities('ani');
 
-  // Build rows: for each pair of consecutive cities, show flight + city
   for (let i = 0; i < cities.length; i++) {
     const city = cities[i];
     const prevCity = i > 0 ? cities[i - 1] : null;
+    const eitherHas = fedCities.has(city) || aniCities.has(city);
 
-    // Flight connector row (between previous city and this city)
+    // ---- FLIGHT CONNECTOR ROW ----
     if (prevCity) {
       const fedLeg = personLegBetween('fed', prevCity, city);
       const aniLeg = personLegBetween('ani', prevCity, city);
 
-      // Left (Federico)
-      const leftDiv = document.createElement('div');
-      leftDiv.className = 'person-col left';
-      leftDiv.appendChild(renderLegCard('fed', fedLeg, prevCity, city));
+      // Left: Federico flight
+      const leftFlight = document.createElement('div');
+      leftFlight.className = 'person-col left';
+      leftFlight.appendChild(renderLegCard('fed', fedLeg));
 
-      // Center line
-      const centerDiv = document.createElement('div');
-      centerDiv.className = 'center-col';
-      centerDiv.innerHTML = '<div class="center-line"></div>';
+      // Center: plane icon + line
+      const centerFlight = document.createElement('div');
+      centerFlight.className = 'center-col';
+      centerFlight.innerHTML = `<div class="center-line"></div><div class="center-flight"><span class="plane-icon">✈</span></div><div class="center-line"></div>`;
 
-      // Right (Anissa)
-      const rightDiv = document.createElement('div');
-      rightDiv.className = 'person-col right';
-      rightDiv.appendChild(renderLegCard('ani', aniLeg, prevCity, city));
+      // Right: Anissa flight
+      const rightFlight = document.createElement('div');
+      rightFlight.className = 'person-col right';
+      rightFlight.appendChild(renderLegCard('ani', aniLeg));
 
-      timeline.appendChild(leftDiv);
-      timeline.appendChild(centerDiv);
-      timeline.appendChild(rightDiv);
+      timeline.appendChild(leftFlight);
+      timeline.appendChild(centerFlight);
+      timeline.appendChild(rightFlight);
     }
 
-    // City row
-    const fedHasCity = fedCities.has(city);
-    const aniHasCity = aniCities.has(city);
+    // ---- CITY ROW ----
+    const arrLeg = legArrivingAt(city);
 
-    // Left: Federico hotel/stay
+    // Left: Federico hotel
     const leftCity = document.createElement('div');
     leftCity.className = 'person-col left';
-    if (fedHasCity && HOTELS_DB[city]) {
+    if (fedCities.has(city) && HOTELS_DB[city]) {
       const h = getSelectedHotel('fed', city);
       if (h) {
-        const info = document.createElement('div');
-        info.className = 'stay-info';
-        info.innerHTML = `<span class="hotel-name">${h.name}</span> · $${h.ppn}/n × ${h.nights}n = <b>$${h.ppn * h.nights}</b>`;
-        info.style.cursor = 'pointer';
-        info.onclick = () => openHotelDropdown('fed', city);
-        leftCity.appendChild(info);
+        const hl = document.createElement('div');
+        hl.className = 'hotel-line';
+        hl.innerHTML = `🏨 <span class="hotel-name">${h.name}</span> · $${h.ppn}/n · <b>$${h.ppn * h.nights}</b>`;
+        hl.onclick = () => openHotelDropdown('fed', city);
+        leftCity.appendChild(hl);
       }
     }
 
-    // Center: city dot + name
+    // Center: city name, dates, stay info, event
     const centerCity = document.createElement('div');
     centerCity.className = 'center-col';
-    const bothHave = fedHasCity && aniHasCity;
-    const eitherHas = fedHasCity || aniHasCity;
-    centerCity.innerHTML = `
-      <div class="center-city">
-        <div class="dot" style="${!eitherHas ? 'opacity:0.3' : ''}"></div>
-        <div class="city-label" style="${!eitherHas ? 'opacity:0.3' : ''}">${SHORT[city] || city}</div>
-      </div>
-    `;
+    const cc = document.createElement('div');
+    cc.className = 'center-city' + (!eitherHas ? ' dimmed' : '');
 
-    // Right: Anissa hotel/stay
+    let dateStr = '';
+    let stayStr = '';
+    if (arrLeg) {
+      if (arrLeg.stayDates) dateStr = arrLeg.stayDates;
+      if (arrLeg.stayNights) stayStr = arrLeg.stayNights + ' nights';
+    }
+
+    let eventHtml = '';
+    if (arrLeg && arrLeg.event && arrLeg.event.name && arrLeg.event.name !== 'Return home' && arrLeg.event.name !== 'Sicily stay') {
+      const link = arrLeg.event.link
+        ? `<a class="city-event" href="${arrLeg.event.link}" target="_blank">${arrLeg.event.date ? arrLeg.event.date + ' · ' : ''}${arrLeg.event.name}</a>`
+        : `<span class="city-event">${arrLeg.event.date ? arrLeg.event.date + ' · ' : ''}${arrLeg.event.name}</span>`;
+      eventHtml = link;
+    }
+
+    cc.innerHTML = `
+      <div class="dot"></div>
+      <div class="city-name">${city}</div>
+      ${dateStr ? `<div class="city-dates">${dateStr}</div>` : ''}
+      ${stayStr ? `<div class="city-stay">${stayStr}</div>` : ''}
+      ${eventHtml}
+    `;
+    centerCity.appendChild(document.createElement('div')); // spacer
+    centerCity.appendChild(cc);
+
+    // Right: Anissa hotel
     const rightCity = document.createElement('div');
     rightCity.className = 'person-col right';
-    if (aniHasCity && HOTELS_DB[city]) {
+    if (aniCities.has(city) && HOTELS_DB[city]) {
       const h = getSelectedHotel('ani', city);
       if (h) {
-        const info = document.createElement('div');
-        info.className = 'stay-info';
-        info.innerHTML = `<span class="hotel-name">${h.name}</span> · $${h.ppn}/n × ${h.nights}n = <b>$${h.ppn * h.nights}</b>`;
-        info.style.cursor = 'pointer';
-        info.onclick = () => openHotelDropdown('ani', city);
-        rightCity.appendChild(info);
+        const hl = document.createElement('div');
+        hl.className = 'hotel-line';
+        hl.innerHTML = `🏨 <span class="hotel-name">${h.name}</span> · $${h.ppn}/n · <b>$${h.ppn * h.nights}</b>`;
+        hl.onclick = () => openHotelDropdown('ani', city);
+        rightCity.appendChild(hl);
       }
     }
 
@@ -520,38 +554,29 @@ function render() {
     timeline.appendChild(rightCity);
   }
 
-  // Add city buttons
-  const addLeft = document.createElement('div');
-  addLeft.className = 'person-col left';
-  addLeft.innerHTML = '<button class="add-city-btn" onclick="openAddLeg(\'fed\')">+ Add leg</button>';
+  // Add leg buttons
+  const addL = document.createElement('div');
+  addL.className = 'person-col left';
+  addL.innerHTML = '<button class="add-city-btn" onclick="openAddLeg(\'fed\')">+ Add leg</button>';
+  const addC = document.createElement('div');
+  addC.className = 'center-col';
+  const addR = document.createElement('div');
+  addR.className = 'person-col right';
+  addR.innerHTML = '<button class="add-city-btn" onclick="openAddLeg(\'ani\')">+ Add leg</button>';
+  timeline.appendChild(addL);
+  timeline.appendChild(addC);
+  timeline.appendChild(addR);
 
-  const addCenter = document.createElement('div');
-  addCenter.className = 'center-col';
-
-  const addRight = document.createElement('div');
-  addRight.className = 'person-col right';
-  addRight.innerHTML = '<button class="add-city-btn" onclick="openAddLeg(\'ani\')">+ Add leg</button>';
-
-  timeline.appendChild(addLeft);
-  timeline.appendChild(addCenter);
-  timeline.appendChild(addRight);
-
-  // Person headers (prepend)
   updateTotals();
 }
 
-function renderLegCard(person, legKey, fromCity, toCity) {
-  const personCitiesSet = personCities(person);
-  const hasFrom = personCitiesSet.has(fromCity);
-  const hasTo = personCitiesSet.has(toCity);
-
+function renderLegCard(person, legKey) {
   if (!legKey) {
     const ph = document.createElement('div');
     ph.className = 'leg-placeholder';
     ph.textContent = '—';
     return ph;
   }
-
   const leg = getLeg(legKey);
   const flight = getSelectedFlight(person, legKey);
   if (!leg || !flight) {
@@ -560,46 +585,30 @@ function renderLegCard(person, legKey, fromCity, toCity) {
     ph.textContent = '—';
     return ph;
   }
-
   const card = document.createElement('div');
   card.className = 'leg-card';
-
-  let eventHtml = '';
-  if (leg.event && leg.event.name && leg.event.name !== 'Return home') {
-    const link = leg.event.link ? `<a href="${leg.event.link}" target="_blank" style="color:inherit;text-decoration:none">${leg.event.name}</a>` : leg.event.name;
-    eventHtml = `<div class="event-tag">${leg.event.date ? leg.event.date + ' · ' : ''}${link}</div>`;
-  }
-
   card.innerHTML = `
-    <div class="flight-main">
+    <div class="flight-row">
+      <span class="route-tag">${flight.route}</span>
       <span class="airline">${flight.airline}</span>
       <span class="price">$${flight.price}</span>
     </div>
-    <div class="meta">${flight.date} · ${flight.dep}→${flight.arr} · ${flight.route}${flight.note ? ' · ' + flight.note : ''}</div>
-    ${eventHtml}
+    <div class="meta">${flight.date} · ${flight.dep} → ${flight.arr} · ${flight.dur}${flight.note ? ' · ' + flight.note : ''}</div>
     <button class="remove-btn" title="Remove leg">×</button>
   `;
-
-  card.querySelector('.remove-btn').onclick = (e) => {
-    e.stopPropagation();
-    removeLeg(person, legKey);
-  };
+  card.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); removeLeg(person, legKey); };
   card.onclick = () => openFlightDropdown(person, legKey);
-
   return card;
 }
 
 function updateTotals() {
-  const ft = personTotal('fed');
-  const at = personTotal('ani');
+  const ft = personTotal('fed'), at = personTotal('ani');
   document.getElementById('total-fed').querySelector('span').textContent = '$' + ft.total.toLocaleString();
   document.getElementById('total-ani').querySelector('span').textContent = '$' + at.total.toLocaleString();
 }
 
 // ===== DROPDOWNS =====
-function closeDropdown() {
-  document.getElementById('overlay').classList.remove('open');
-}
+function closeDropdown() { document.getElementById('overlay').classList.remove('open'); }
 
 function openFlightDropdown(person, legKey) {
   const leg = getLeg(legKey);
@@ -607,20 +616,17 @@ function openFlightDropdown(person, legKey) {
   const panel = document.getElementById('dropdown-panel');
   const cheapest = Math.min(...leg.flights.map(f => f.price));
   const selected = getSelectedFlight(person, legKey);
-  const personLabel = person === 'fed' ? 'Federico' : 'Anissa';
-
-  let html = `<h3>✈ ${leg.from} → ${leg.to} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${personLabel}</span></h3>`;
-
+  const label = person === 'fed' ? 'Federico' : 'Anissa';
+  let html = `<h3>✈ ${leg.from} → ${leg.to} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${label}</span></h3>`;
   leg.flights.forEach(f => {
-    const isCheapest = f.price === cheapest;
-    const isSel = selected && f.id === selected.id;
+    const isCheap = f.price === cheapest, isSel = selected && f.id === selected.id;
     const link = buildSearchLink(f, leg);
     html += `
-      <div class="dd-option ${isSel ? 'selected' : ''} ${isCheapest ? 'cheapest' : ''}"
+      <div class="dd-option ${isSel ? 'selected' : ''} ${isCheap ? 'cheapest' : ''}"
            onclick="selectFlight('${person}','${legKey}','${f.id}')">
         <div class="radio"></div>
         <div class="opt-details">
-          <div><span class="opt-airline">${f.airline}</span> ${isCheapest ? '<span class="cheapest-tag">Cheapest</span>' : ''}</div>
+          <div><span class="opt-airline">${f.airline}</span> ${isCheap ? '<span class="cheapest-tag">Cheapest</span>' : ''}</div>
           <div class="opt-times">${f.date} · ${f.dep} → ${f.arr} · ${f.dur} · ${f.route}</div>
           ${f.note ? `<div class="opt-note">${f.note}</div>` : ''}
         </div>
@@ -628,7 +634,6 @@ function openFlightDropdown(person, legKey) {
         <div class="opt-price">$${f.price}</div>
       </div>`;
   });
-
   panel.innerHTML = html;
   document.getElementById('overlay').classList.add('open');
 }
@@ -639,61 +644,46 @@ function openHotelDropdown(person, city) {
   const panel = document.getElementById('dropdown-panel');
   const cheapest = Math.min(...hotels.map(h => h.ppn));
   const selected = getSelectedHotel(person, city);
-  const personLabel = person === 'fed' ? 'Federico' : 'Anissa';
-
-  let html = `<h3>🏨 ${city} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${personLabel}</span></h3>`;
-
+  const label = person === 'fed' ? 'Federico' : 'Anissa';
+  let html = `<h3>🏨 ${city} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${label}</span></h3>`;
   hotels.forEach(h => {
-    const isCheapest = h.ppn === cheapest;
-    const isSel = selected && h.id === selected.id;
+    const isCheap = h.ppn === cheapest, isSel = selected && h.id === selected.id;
     const total = h.ppn * h.nights;
     html += `
-      <div class="dd-option ${isSel ? 'selected' : ''} ${isCheapest ? 'cheapest' : ''}"
+      <div class="dd-option ${isSel ? 'selected' : ''} ${isCheap ? 'cheapest' : ''}"
            onclick="selectHotel('${person}','${city}','${h.id}')">
         <div class="radio"></div>
         <div class="opt-details">
-          <div><span class="opt-airline">${h.name}</span> ${isCheapest ? '<span class="cheapest-tag">Cheapest</span>' : ''}</div>
+          <div><span class="opt-airline">${h.name}</span> ${isCheap ? '<span class="cheapest-tag">Cheapest</span>' : ''}</div>
           <div class="opt-times">${h.location} · ${h.nights} nights · $${h.ppn}/night</div>
         </div>
         <div class="opt-price">$${total}</div>
       </div>`;
   });
-
   panel.innerHTML = html;
   document.getElementById('overlay').classList.add('open');
 }
 
 function selectFlight(person, legKey, flightId) {
   state[person].selected[legKey] = flightId;
-  saveState();
-  closeDropdown();
-  render();
+  saveState(); closeDropdown(); render();
 }
-
 function selectHotel(person, city, hotelId) {
   state[person].hotels[city] = hotelId;
-  saveState();
-  closeDropdown();
-  render();
+  saveState(); closeDropdown(); render();
 }
 
 // ===== ADD / REMOVE =====
 function removeLeg(person, legKey) {
   state[person].legs = state[person].legs.filter(k => k !== legKey);
-  saveState();
-  render();
+  saveState(); render();
 }
-
 function openAddLeg(person) {
   const panel = document.getElementById('dropdown-panel');
-  const personLabel = person === 'fed' ? 'Federico' : 'Anissa';
+  const label = person === 'fed' ? 'Federico' : 'Anissa';
   const currentLegs = new Set(state[person].legs);
-
-  // Show available legs not yet added
   const available = LEGS_DB.filter(l => !currentLegs.has(l.from + '->' + l.to));
-
-  let html = `<h3>+ Add leg <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${personLabel}</span></h3>`;
-
+  let html = `<h3>+ Add leg <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${label}</span></h3>`;
   if (available.length === 0) {
     html += '<div style="padding:16px;color:var(--text-muted)">All legs already added.</div>';
   } else {
@@ -710,67 +700,46 @@ function openAddLeg(person) {
         </div>`;
     });
   }
-
   panel.innerHTML = html;
   document.getElementById('overlay').classList.add('open');
 }
-
 function addLeg(person, legKey) {
   if (!state[person].legs.includes(legKey)) {
-    // Insert in canonical order
     const order = LEGS_DB.map(l => l.from + '->' + l.to);
     state[person].legs.push(legKey);
     state[person].legs.sort((a, b) => order.indexOf(a) - order.indexOf(b));
-    // Auto-select cheapest if not already
     if (!state[person].selected[legKey]) {
       const leg = getLeg(legKey);
-      if (leg) {
-        const cheapest = leg.flights.reduce((a, b) => a.price < b.price ? a : b);
-        state[person].selected[legKey] = cheapest.id;
-      }
+      if (leg) state[person].selected[legKey] = leg.flights.reduce((a, b) => a.price < b.price ? a : b).id;
     }
-    // Auto-select cheapest hotel for destination
     const leg = getLeg(legKey);
     if (leg && HOTELS_DB[leg.to] && !state[person].hotels[leg.to]) {
-      const cheapest = HOTELS_DB[leg.to].reduce((a, b) => a.ppn < b.ppn ? a : b);
-      state[person].hotels[leg.to] = cheapest.id;
+      state[person].hotels[leg.to] = HOTELS_DB[leg.to].reduce((a, b) => a.ppn < b.ppn ? a : b).id;
     }
   }
-  saveState();
-  closeDropdown();
-  render();
+  saveState(); closeDropdown(); render();
 }
 
 // ===== DOWNLOAD =====
 function downloadItinerary() {
-  let text = 'EUROPE TRIP 2026 — ITINERARY\n';
-  text += '═'.repeat(40) + '\n\n';
-
+  let text = 'EUROPE TRIP 2026 — ITINERARY\n' + '═'.repeat(40) + '\n\n';
   ['fed', 'ani'].forEach(person => {
     const label = person === 'fed' ? 'FEDERICO' : 'ANISSA';
     const t = personTotal(person);
-    text += `${label} (Total: $${t.total.toLocaleString()} — flights $${t.flights} + hotels $${t.hotels})\n`;
-    text += '─'.repeat(40) + '\n';
-
+    text += `${label} (Total: $${t.total.toLocaleString()} — flights $${t.flights} + hotels $${t.hotels})\n` + '─'.repeat(40) + '\n';
     state[person].legs.forEach(key => {
-      const leg = getLeg(key);
-      const flight = getSelectedFlight(person, key);
+      const leg = getLeg(key), flight = getSelectedFlight(person, key);
       if (!leg || !flight) return;
-      text += `✈ ${leg.from} → ${leg.to}\n`;
+      text += `\n✈ ${leg.from} → ${leg.to}\n`;
       text += `  ${flight.airline} · ${flight.date} · ${flight.dep}→${flight.arr} · ${flight.route} · $${flight.price}\n`;
-      if (leg.event && leg.event.name) {
-        text += `  📌 ${leg.event.name}${leg.event.date ? ' — ' + leg.event.date : ''}\n`;
-      }
-      // Hotel at destination
+      if (leg.event && leg.event.name) text += `  📌 ${leg.event.name}${leg.event.date ? ' — ' + leg.event.date : ''}\n`;
       if (HOTELS_DB[leg.to]) {
         const h = getSelectedHotel(person, leg.to);
         if (h) text += `  🏨 ${h.name} · ${h.nights}n × $${h.ppn} = $${h.ppn * h.nights}\n`;
       }
-      text += '\n';
     });
-    text += '\n';
+    text += '\n\n';
   });
-
   const blob = new Blob([text], { type: 'text/plain' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
