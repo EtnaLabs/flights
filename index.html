@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Europe Trip — Federico & Anissa</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg-card: #f8f9fa; --text: #111; --text-muted: #6b7280;
+    --border: #e5e7eb; --line: #d1d5db; --dot: #9ca3af; --accent: #3b82f6;
+    --green: #16a34a; --green-bg: #f0fdf4; --hover: #f3f4f6;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08); --fed-color: #3b82f6; --ani-color: #ec4899;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0a0a; --bg-card: #151515; --text: #f0f0f0; --text-muted: #888;
+      --border: #2a2a2a; --line: #333; --dot: #555; --accent: #3b82f6;
+      --green: #4ade80; --green-bg: #0a1f0a; --hover: #222;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+  }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.5; min-height: 100vh; padding: 1.5rem 1rem 4rem;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 2rem; }
+  .header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+  .header .dates { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem; }
+  .totals { display: flex; justify-content: center; gap: 2rem; margin-top: 0.75rem; }
+  .totals .person-total {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 1.1rem; font-weight: 700;
+  }
+  .totals img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+
+  /* Dual timeline */
+  .dual-timeline { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; }
+
+  /* Center column */
+  .center-col { display: flex; flex-direction: column; align-items: center; }
+  .center-city {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 8px 0; position: relative; z-index: 2;
+  }
+  .center-city .dot {
+    width: 14px; height: 14px; border-radius: 50%; background: var(--dot);
+    border: 3px solid var(--bg); box-shadow: 0 0 0 2px var(--dot);
+  }
+  .center-city .city-label {
+    font-size: 0.7rem; font-weight: 700; color: var(--text-muted);
+    writing-mode: vertical-lr; text-orientation: mixed;
+    letter-spacing: 0.05em; margin-top: 4px;
+  }
+  .center-line { width: 2px; background: var(--line); flex: 1; min-height: 20px; }
+
+  /* Person column */
+  .person-col { display: flex; flex-direction: column; }
+  .person-col.left { align-items: flex-end; text-align: right; }
+  .person-col.right { align-items: flex-start; text-align: left; }
+
+  .person-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;
+    padding: 0 8px;
+  }
+  .person-col.left .person-header { flex-direction: row-reverse; }
+  .person-header img {
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    border: 2px solid var(--border);
+  }
+  .person-header .name { font-weight: 700; font-size: 1rem; }
+
+  /* Leg card */
+  .leg-card {
+    padding: 6px 12px; margin: 2px 0; border-radius: 10px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    font-size: 0.82rem; position: relative; min-width: 180px; max-width: 320px;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .leg-card:hover { border-color: var(--accent); }
+  .leg-card .flight-main { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .leg-card .airline { font-weight: 600; }
+  .leg-card .price { font-weight: 700; }
+  .leg-card .meta { color: var(--text-muted); font-size: 0.75rem; margin-top: 1px; }
+  .leg-card .event-tag {
+    display: inline-block; font-size: 0.65rem; font-weight: 600;
+    padding: 1px 6px; border-radius: 4px; margin-top: 3px;
+    background: #dbeafe; color: #1d4ed8;
+  }
+  @media (prefers-color-scheme: dark) {
+    .leg-card .event-tag { background: #1e3a5f; color: #93c5fd; }
+  }
+
+  /* Grayed out placeholder */
+  .leg-placeholder {
+    padding: 6px 12px; margin: 2px 0; border-radius: 10px;
+    border: 1px dashed var(--border); min-height: 42px; min-width: 180px; max-width: 320px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); font-size: 0.75rem; opacity: 0.4;
+  }
+
+  /* City row container */
+  .city-row-left, .city-row-right { padding: 4px 8px; }
+
+  /* Stay info */
+  .stay-info {
+    font-size: 0.72rem; color: var(--text-muted); padding: 0 12px; margin-bottom: 2px;
+  }
+  .stay-info .hotel-name { font-weight: 500; }
+
+  /* Flight dropdown */
+  .dropdown-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.3); z-index: 100;
+  }
+  .dropdown-overlay.open { display: block; }
+  .dropdown-panel {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: var(--shadow); z-index: 101; width: 420px; max-width: 92vw;
+    max-height: 80vh; overflow-y: auto;
+  }
+  .dropdown-panel h3 {
+    padding: 14px 16px 10px; font-size: 0.95rem; border-bottom: 1px solid var(--border);
+  }
+  .dd-option {
+    padding: 10px 16px; cursor: pointer; display: flex; align-items: center;
+    gap: 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem;
+    transition: background 0.1s;
+  }
+  .dd-option:last-child { border-bottom: none; }
+  .dd-option:hover { background: var(--hover); }
+  .dd-option.selected { background: var(--hover); }
+  .dd-option.cheapest { background: var(--green-bg); }
+  .dd-option .radio {
+    width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  }
+  .dd-option.selected .radio { border-color: var(--accent); }
+  .dd-option.selected .radio::after {
+    content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
+  }
+  .dd-option .opt-details { flex: 1; min-width: 0; }
+  .dd-option .opt-airline { font-weight: 600; }
+  .dd-option .opt-times { color: var(--text-muted); font-size: 0.8rem; }
+  .dd-option .opt-note { color: var(--accent); font-size: 0.75rem; }
+  .dd-option .opt-price { font-weight: 700; flex-shrink: 0; min-width: 50px; text-align: right; }
+  .dd-option.cheapest .opt-price { color: var(--green); }
+  .cheapest-tag {
+    font-size: 0.6rem; font-weight: 600; color: var(--green);
+    background: var(--green-bg); padding: 1px 5px; border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .dd-option .opt-book {
+    color: var(--accent); text-decoration: none; font-size: 0.75rem; font-weight: 500;
+    flex-shrink: 0; padding: 2px 8px; border-radius: 4px;
+  }
+  .dd-option .opt-book:hover { text-decoration: underline; }
+  .dd-section-title {
+    padding: 8px 16px 4px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  /* Add/remove city */
+  .add-city-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 12px; margin: 8px 8px; border-radius: 8px;
+    border: 1px dashed var(--border); background: none; color: var(--text-muted);
+    font-size: 0.75rem; cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .add-city-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .remove-btn {
+    position: absolute; top: 4px; right: 6px; width: 16px; height: 16px;
+    border: none; background: none; color: var(--text-muted); font-size: 0.7rem;
+    cursor: pointer; border-radius: 3px; display: flex; align-items: center;
+    justify-content: center; opacity: 0; transition: opacity 0.15s;
+  }
+  .leg-card:hover .remove-btn { opacity: 0.5; }
+  .remove-btn:hover { opacity: 1 !important; color: #ef4444; }
+
+  /* Download button */
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg-card); color: var(--text); font-size: 0.85rem;
+    font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 1.5rem;
+    transition: all 0.15s;
+  }
+  .dl-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Add city modal */
+  .modal-form { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .modal-form input, .modal-form select {
+    font-family: inherit; font-size: 0.85rem; padding: 8px 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text);
+  }
+  .modal-form .form-row { display: flex; gap: 8px; }
+  .modal-form .form-row input { flex: 1; }
+  .modal-form button {
+    padding: 8px 16px; border-radius: 8px; border: none;
+    background: var(--accent); color: #fff; font-size: 0.85rem;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .modal-form button:hover { opacity: 0.85; }
+
+  @media (max-width: 700px) {
+    .dual-timeline { grid-template-columns: 1fr 30px 1fr; }
+    .leg-card, .leg-placeholder { min-width: 120px; font-size: 0.75rem; }
+    .person-header img { width: 28px; height: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Europe Trip 2026</h1>
+    <div class="dates">Apr 25 – May 2026</div>
+    <div class="totals">
+      <div class="person-total" id="total-fed">
+        <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/fed.jpg" alt="Federico">
+        <span>$0</span>
+      </div>
+      <div class="person-total" id="total-ani">
+        <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/anissa.jpg" alt="Anissa">
+        <span>$0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dual-timeline" id="timeline"></div>
+
+  <div style="text-align:center">
+    <button class="dl-btn" onclick="downloadItinerary()">📋 Download Itinerary</button>
+  </div>
+</div>
+
+<!-- Dropdown overlay -->
+<div class="dropdown-overlay" id="overlay" onclick="closeDropdown()">
+  <div class="dropdown-panel" id="dropdown-panel" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+// ===== DATA =====
+const ALL_CITIES = ["New York City", "London", "Lisbon", "Berlin", "Zurich", "Catania"];
+const SHORT = { "New York City": "NYC", "London": "LDN", "Lisbon": "LIS", "Berlin": "BER", "Zurich": "ZRH", "Catania": "CTA" };
+
+const LEGS_DB = [
+  {
+    from: "New York City", to: "London", date: "Apr 26",
+    event: { name: "AI London 1.0", date: "Apr 28", link: "https://lu.ma/ai-london-1.0" },
+    flights: [
+      { id: "1d", airline: "JetBlue", dep: "8:45AM", arr: "8:45PM", dur: "7h", route: "JFK-LHR", price: 375, date: "Apr 26" },
+      { id: "1e", airline: "British Airways", dep: "7:50AM", arr: "7:45PM", dur: "6h55m", route: "JFK-LHR", price: 380, date: "Apr 26" },
+      { id: "1f", airline: "American", dep: "7:20PM", arr: "7:20AM+1", dur: "7h", route: "JFK-LHR", price: 395, date: "Apr 26", note: "Red-eye" },
+      { id: "1g", airline: "Delta", dep: "10:00PM", arr: "10:20AM+1", dur: "7h20m", route: "JFK-LHR", price: 395, date: "Apr 26", note: "Red-eye" },
+      { id: "1h", airline: "Delta", dep: "8:15PM", arr: "8:50AM+1", dur: "7h35m", route: "JFK-LHR", price: 395, date: "Apr 25", note: "Red-eye, arrives Apr 26" }
+    ]
+  },
+  {
+    from: "London", to: "Lisbon", date: "Apr 29",
+    event: { name: "Lisbon event", date: "May 1", link: "https://lu.ma/cicip0jl" },
+    flights: [
+      { id: "2a", airline: "Ryanair", dep: "7:40PM", arr: "10:30PM", dur: "2h50m", route: "STN-LIS", price: 63, date: "Apr 29" },
+      { id: "2b", airline: "Ryanair", dep: "5:05PM", arr: "7:55PM", dur: "2h50m", route: "STN-LIS", price: 64, date: "Apr 29" },
+      { id: "2c", airline: "easyJet", dep: "6:10PM", arr: "9:00PM", dur: "2h50m", route: "LTN-LIS", price: 68, date: "Apr 29" },
+      { id: "2d", airline: "easyJet", dep: "7:00AM", arr: "9:55AM", dur: "2h55m", route: "LTN-LIS", price: 68, date: "Apr 29" },
+      { id: "2e", airline: "TAP", dep: "8:00AM", arr: "10:50AM", dur: "2h50m", route: "LHR-LIS", price: 111, date: "Apr 29" }
+    ]
+  },
+  {
+    from: "Lisbon", to: "Berlin", date: "May 6",
+    event: { name: "Berlin event", date: "May 7" },
+    flights: [
+      { id: "3a", airline: "Ryanair", dep: "6:30AM", arr: "11:30AM", dur: "3h30m", route: "LIS-BER", price: 45, date: "May 6" },
+      { id: "3b", airline: "easyJet", dep: "10:15AM", arr: "3:15PM", dur: "3h30m", route: "LIS-BER", price: 65, date: "May 6" }
+    ]
+  },
+  {
+    from: "Berlin", to: "Zurich", date: "May 9",
+    event: { name: "Zurich event", date: "May 12 (tbd)", link: "https://lu.ma/68ig9kd0" },
+    flights: [
+      { id: "4a", airline: "easyJet", dep: "8:35AM", arr: "10:05AM", dur: "1h30m", route: "BER-ZRH", price: 67, date: "May 9" },
+      { id: "4b", airline: "Eurowings", dep: "8:15PM", arr: "9:40PM", dur: "1h25m", route: "BER-ZRH", price: 76, date: "May 9" },
+      { id: "4c", airline: "SWISS", dep: "9:05AM", arr: "10:30AM", dur: "1h25m", route: "BER-ZRH", price: 101, date: "May 9" }
+    ]
+  },
+  {
+    from: "Zurich", to: "Catania", date: "May 11",
+    event: { name: "Sicily stay", date: "May 11-22" },
+    flights: [
+      { id: "5a", airline: "easyJet", dep: "6:00AM", arr: "8:30AM", dur: "2h30m", route: "ZRH-CTA", price: 90, date: "May 11" },
+      { id: "5b", airline: "SWISS", dep: "12:00PM", arr: "2:25PM", dur: "2h25m", route: "ZRH-CTA", price: 150, date: "May 11" }
+    ]
+  },
+  {
+    from: "Catania", to: "New York City", date: "May 20-30",
+    event: { name: "Return home" },
+    flights: [
+      { id: "6b", airline: "Delta", dep: "10:00AM", arr: "2:16PM", dur: "10h16m", route: "CTA-JFK", price: 1183, date: "May 20-30", note: "4x/week" },
+      { id: "6a", airline: "United", dep: "9:45AM", arr: "2:05PM", dur: "10h20m", route: "PMO-EWR", price: 1286, date: "May 20-30", note: "From Palermo" }
+    ]
+  }
+];
+
+const HOTELS_DB = {
+  "London": [
+    { id: "h1a", name: "easyHotel Shoreditch", ppn: 60, nights: 2, location: "East London" },
+    { id: "h1b", name: "easyHotel Victoria", ppn: 80, nights: 2, location: "Victoria" },
+    { id: "h1c", name: "ibis Styles Aldgate", ppn: 100, nights: 2, location: "Central" }
+  ],
+  "Lisbon": [
+    { id: "h2a", name: "We Love F. Tourists", ppn: 42, nights: 7, location: "Central" },
+    { id: "h2b", name: "Alfama guesthouse", ppn: 55, nights: 7, location: "Alfama" },
+    { id: "h2c", name: "ibis Liberdade", ppn: 80, nights: 7, location: "Av. Liberdade" }
+  ],
+  "Berlin": [
+    { id: "h3a", name: "a&o Berlin Mitte", ppn: 60, nights: 3, location: "Mitte" },
+    { id: "h3b", name: "ibis Berlin Mitte", ppn: 80, nights: 3, location: "Central" }
+  ],
+  "Zurich": [
+    { id: "h4a", name: "ibis Budget City West", ppn: 100, nights: 2, location: "Near HB" },
+    { id: "h4b", name: "Motel One Zurich", ppn: 140, nights: 2, location: "Old town" }
+  ],
+  "Catania": [
+    { id: "h5a", name: "Il Centro Storico B&B", ppn: 67, nights: 11, location: "Old town" },
+    { id: "h5b", name: "Hotel Sofia", ppn: 72, nights: 11, location: "Central" }
+  ]
+};
+
+// ===== STATE =====
+const STORAGE = 'eu-flights-v2';
+let state = loadState();
+
+function defaultState() {
+  const s = { fed: { legs: [], hotels: {}, selected: {} }, ani: { legs: [], hotels: {}, selected: {} } };
+  // Both start with same itinerary
+  LEGS_DB.forEach(leg => {
+    const key = leg.from + '->' + leg.to;
+    s.fed.legs.push(key);
+    s.ani.legs.push(key);
+    // Select cheapest flight
+    const cheapest = leg.flights.reduce((a, b) => a.price < b.price ? a : b);
+    s.fed.selected[key] = cheapest.id;
+    s.ani.selected[key] = cheapest.id;
+  });
+  // Select cheapest hotels
+  for (const city in HOTELS_DB) {
+    const cheapest = HOTELS_DB[city].reduce((a, b) => a.ppn < b.ppn ? a : b);
+    s.fed.hotels[city] = cheapest.id;
+    s.ani.hotels[city] = cheapest.id;
+  }
+  return s;
+}
+
+function loadState() {
+  try { const s = localStorage.getItem(STORAGE); if (s) return JSON.parse(s); } catch(e) {}
+  return defaultState();
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE, JSON.stringify(state)); } catch(e) {}
+}
+
+function getLeg(key) {
+  return LEGS_DB.find(l => (l.from + '->' + l.to) === key);
+}
+function getSelectedFlight(person, legKey) {
+  const leg = getLeg(legKey);
+  if (!leg) return null;
+  const id = state[person].selected[legKey];
+  return leg.flights.find(f => f.id === id) || leg.flights[0];
+}
+function getSelectedHotel(person, city) {
+  const hotels = HOTELS_DB[city];
+  if (!hotels) return null;
+  const id = state[person].hotels[city];
+  return hotels.find(h => h.id === id) || hotels[0];
+}
+
+function personTotal(person) {
+  let flights = 0, hotels = 0;
+  state[person].legs.forEach(key => {
+    const f = getSelectedFlight(person, key);
+    if (f) flights += f.price;
+  });
+  // Cities this person visits (destinations of their legs, excluding NYC)
+  const cities = new Set();
+  state[person].legs.forEach(key => {
+    const leg = getLeg(key);
+    if (leg && leg.to !== "New York City") cities.add(leg.to);
+  });
+  cities.forEach(city => {
+    const h = getSelectedHotel(person, city);
+    if (h) hotels += h.ppn * h.nights;
+  });
+  return { flights, hotels, total: flights + hotels };
+}
+
+// All cities in order, union of both people's routes
+function allCitiesInOrder() {
+  const ordered = [];
+  const seen = new Set();
+  // Use LEGS_DB order as canonical
+  LEGS_DB.forEach(leg => {
+    if (!seen.has(leg.from)) { seen.add(leg.from); ordered.push(leg.from); }
+    if (!seen.has(leg.to)) { seen.add(leg.to); ordered.push(leg.to); }
+  });
+  return ordered;
+}
+
+// Cities a person visits
+function personCities(person) {
+  const cities = new Set();
+  state[person].legs.forEach(key => {
+    const leg = getLeg(key);
+    if (leg) { cities.add(leg.from); cities.add(leg.to); }
+  });
+  return cities;
+}
+
+// Get leg between two consecutive cities for a person
+function personLegBetween(person, from, to) {
+  const key = from + '->' + to;
+  if (state[person].legs.includes(key)) return key;
+  return null;
+}
+
+// ===== RENDER =====
+function render() {
+  const timeline = document.getElementById('timeline');
+  timeline.innerHTML = '';
+
+  const cities = allCitiesInOrder();
+  const fedCities = personCities('fed');
+  const aniCities = personCities('ani');
+
+  // Build rows: for each pair of consecutive cities, show flight + city
+  for (let i = 0; i < cities.length; i++) {
+    const city = cities[i];
+    const prevCity = i > 0 ? cities[i - 1] : null;
+
+    // Flight connector row (between previous city and this city)
+    if (prevCity) {
+      const fedLeg = personLegBetween('fed', prevCity, city);
+      const aniLeg = personLegBetween('ani', prevCity, city);
+
+      // Left (Federico)
+      const leftDiv = document.createElement('div');
+      leftDiv.className = 'person-col left';
+      leftDiv.appendChild(renderLegCard('fed', fedLeg, prevCity, city));
+
+      // Center line
+      const centerDiv = document.createElement('div');
+      centerDiv.className = 'center-col';
+      centerDiv.innerHTML = '<div class="center-line"></div>';
+
+      // Right (Anissa)
+      const rightDiv = document.createElement('div');
+      rightDiv.className = 'person-col right';
+      rightDiv.appendChild(renderLegCard('ani', aniLeg, prevCity, city));
+
+      timeline.appendChild(leftDiv);
+      timeline.appendChild(centerDiv);
+      timeline.appendChild(rightDiv);
+    }
+
+    // City row
+    const fedHasCity = fedCities.has(city);
+    const aniHasCity = aniCities.has(city);
+
+    // Left: Federico hotel/stay
+    const leftCity = document.createElement('div');
+    leftCity.className = 'person-col left';
+    if (fedHasCity && HOTELS_DB[city]) {
+      const h = getSelectedHotel('fed', city);
+      if (h) {
+        const info = document.createElement('div');
+        info.className = 'stay-info';
+        info.innerHTML = `<span class="hotel-name">${h.name}</span> · $${h.ppn}/n × ${h.nights}n = <b>$${h.ppn * h.nights}</b>`;
+        info.style.cursor = 'pointer';
+        info.onclick = () => openHotelDropdown('fed', city);
+        leftCity.appendChild(info);
+      }
+    }
+
+    // Center: city dot + name
+    const centerCity = document.createElement('div');
+    centerCity.className = 'center-col';
+    const bothHave = fedHasCity && aniHasCity;
+    const eitherHas = fedHasCity || aniHasCity;
+    centerCity.innerHTML = `
+      <div class="center-city">
+        <div class="dot" style="${!eitherHas ? 'opacity:0.3' : ''}"></div>
+        <div class="city-label" style="${!eitherHas ? 'opacity:0.3' : ''}">${SHORT[city] || city}</div>
+      </div>
+    `;
+
+    // Right: Anissa hotel/stay
+    const rightCity = document.createElement('div');
+    rightCity.className = 'person-col right';
+    if (aniHasCity && HOTELS_DB[city]) {
+      const h = getSelectedHotel('ani', city);
+      if (h) {
+        const info = document.createElement('div');
+        info.className = 'stay-info';
+        info.innerHTML = `<span class="hotel-name">${h.name}</span> · $${h.ppn}/n × ${h.nights}n = <b>$${h.ppn * h.nights}</b>`;
+        info.style.cursor = 'pointer';
+        info.onclick = () => openHotelDropdown('ani', city);
+        rightCity.appendChild(info);
+      }
+    }
+
+    timeline.appendChild(leftCity);
+    timeline.appendChild(centerCity);
+    timeline.appendChild(rightCity);
+  }
+
+  // Add city buttons
+  const addLeft = document.createElement('div');
+  addLeft.className = 'person-col left';
+  addLeft.innerHTML = '<button class="add-city-btn" onclick="openAddLeg(\'fed\')">+ Add leg</button>';
+
+  const addCenter = document.createElement('div');
+  addCenter.className = 'center-col';
+
+  const addRight = document.createElement('div');
+  addRight.className = 'person-col right';
+  addRight.innerHTML = '<button class="add-city-btn" onclick="openAddLeg(\'ani\')">+ Add leg</button>';
+
+  timeline.appendChild(addLeft);
+  timeline.appendChild(addCenter);
+  timeline.appendChild(addRight);
+
+  // Person headers (prepend)
+  updateTotals();
+}
+
+function renderLegCard(person, legKey, fromCity, toCity) {
+  const personCitiesSet = personCities(person);
+  const hasFrom = personCitiesSet.has(fromCity);
+  const hasTo = personCitiesSet.has(toCity);
+
+  if (!legKey) {
+    const ph = document.createElement('div');
+    ph.className = 'leg-placeholder';
+    ph.textContent = '—';
+    return ph;
+  }
+
+  const leg = getLeg(legKey);
+  const flight = getSelectedFlight(person, legKey);
+  if (!leg || !flight) {
+    const ph = document.createElement('div');
+    ph.className = 'leg-placeholder';
+    ph.textContent = '—';
+    return ph;
+  }
+
+  const card = document.createElement('div');
+  card.className = 'leg-card';
+
+  let eventHtml = '';
+  if (leg.event && leg.event.name && leg.event.name !== 'Return home') {
+    const link = leg.event.link ? `<a href="${leg.event.link}" target="_blank" style="color:inherit;text-decoration:none">${leg.event.name}</a>` : leg.event.name;
+    eventHtml = `<div class="event-tag">${leg.event.date ? leg.event.date + ' · ' : ''}${link}</div>`;
+  }
+
+  card.innerHTML = `
+    <div class="flight-main">
+      <span class="airline">${flight.airline}</span>
+      <span class="price">$${flight.price}</span>
+    </div>
+    <div class="meta">${flight.date} · ${flight.dep}→${flight.arr} · ${flight.route}${flight.note ? ' · ' + flight.note : ''}</div>
+    ${eventHtml}
+    <button class="remove-btn" title="Remove leg">×</button>
+  `;
+
+  card.querySelector('.remove-btn').onclick = (e) => {
+    e.stopPropagation();
+    removeLeg(person, legKey);
+  };
+  card.onclick = () => openFlightDropdown(person, legKey);
+
+  return card;
+}
+
+function updateTotals() {
+  const ft = personTotal('fed');
+  const at = personTotal('ani');
+  document.getElementById('total-fed').querySelector('span').textContent = '$' + ft.total.toLocaleString();
+  document.getElementById('total-ani').querySelector('span').textContent = '$' + at.total.toLocaleString();
+}
+
+// ===== DROPDOWNS =====
+function closeDropdown() {
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function openFlightDropdown(person, legKey) {
+  const leg = getLeg(legKey);
+  if (!leg) return;
+  const panel = document.getElementById('dropdown-panel');
+  const cheapest = Math.min(...leg.flights.map(f => f.price));
+  const selected = getSelectedFlight(person, legKey);
+  const personLabel = person === 'fed' ? 'Federico' : 'Anissa';
+
+  let html = `<h3>✈ ${leg.from} → ${leg.to} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${personLabel}</span></h3>`;
+
+  leg.flights.forEach(f => {
+    const isCheapest = f.price === cheapest;
+    const isSel = selected && f.id === selected.id;
+    const link = buildSearchLink(f, leg);
+    html += `
+      <div class="dd-option ${isSel ? 'selected' : ''} ${isCheapest ? 'cheapest' : ''}"
+           onclick="selectFlight('${person}','${legKey}','${f.id}')">
+        <div class="radio"></div>
+        <div class="opt-details">
+          <div><span class="opt-airline">${f.airline}</span> ${isCheapest ? '<span class="cheapest-tag">Cheapest</span>' : ''}</div>
+          <div class="opt-times">${f.date} · ${f.dep} → ${f.arr} · ${f.dur} · ${f.route}</div>
+          ${f.note ? `<div class="opt-note">${f.note}</div>` : ''}
+        </div>
+        <a class="opt-book" href="${link}" target="_blank" onclick="event.stopPropagation()">↗</a>
+        <div class="opt-price">$${f.price}</div>
+      </div>`;
+  });
+
+  panel.innerHTML = html;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function openHotelDropdown(person, city) {
+  const hotels = HOTELS_DB[city];
+  if (!hotels) return;
+  const panel = document.getElementById('dropdown-panel');
+  const cheapest = Math.min(...hotels.map(h => h.ppn));
+  const selected = getSelectedHotel(person, city);
+  const personLabel = person === 'fed' ? 'Federico' : 'Anissa';
+
+  let html = `<h3>🏨 ${city} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${personLabel}</span></h3>`;
+
+  hotels.forEach(h => {
+    const isCheapest = h.ppn === cheapest;
+    const isSel = selected && h.id === selected.id;
+    const total = h.ppn * h.nights;
+    html += `
+      <div class="dd-option ${isSel ? 'selected' : ''} ${isCheapest ? 'cheapest' : ''}"
+           onclick="selectHotel('${person}','${city}','${h.id}')">
+        <div class="radio"></div>
+        <div class="opt-details">
+          <div><span class="opt-airline">${h.name}</span> ${isCheapest ? '<span class="cheapest-tag">Cheapest</span>' : ''}</div>
+          <div class="opt-times">${h.location} · ${h.nights} nights · $${h.ppn}/night</div>
+        </div>
+        <div class="opt-price">$${total}</div>
+      </div>`;
+  });
+
+  panel.innerHTML = html;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function selectFlight(person, legKey, flightId) {
+  state[person].selected[legKey] = flightId;
+  saveState();
+  closeDropdown();
+  render();
+}
+
+function selectHotel(person, city, hotelId) {
+  state[person].hotels[city] = hotelId;
+  saveState();
+  closeDropdown();
+  render();
+}
+
+// ===== ADD / REMOVE =====
+function removeLeg(person, legKey) {
+  state[person].legs = state[person].legs.filter(k => k !== legKey);
+  saveState();
+  render();
+}
+
+function openAddLeg(person) {
+  const panel = document.getElementById('dropdown-panel');
+  const personLabel = person === 'fed' ? 'Federico' : 'Anissa';
+  const currentLegs = new Set(state[person].legs);
+
+  // Show available legs not yet added
+  const available = LEGS_DB.filter(l => !currentLegs.has(l.from + '->' + l.to));
+
+  let html = `<h3>+ Add leg <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${personLabel}</span></h3>`;
+
+  if (available.length === 0) {
+    html += '<div style="padding:16px;color:var(--text-muted)">All legs already added.</div>';
+  } else {
+    available.forEach(leg => {
+      const key = leg.from + '->' + leg.to;
+      const cheapest = leg.flights.reduce((a, b) => a.price < b.price ? a : b);
+      html += `
+        <div class="dd-option" onclick="addLeg('${person}','${key}')">
+          <div class="opt-details">
+            <div><span class="opt-airline">${leg.from} → ${leg.to}</span></div>
+            <div class="opt-times">${leg.date} · from $${cheapest.price}</div>
+          </div>
+          <div class="opt-price" style="color:var(--green)">+ Add</div>
+        </div>`;
+    });
+  }
+
+  panel.innerHTML = html;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function addLeg(person, legKey) {
+  if (!state[person].legs.includes(legKey)) {
+    // Insert in canonical order
+    const order = LEGS_DB.map(l => l.from + '->' + l.to);
+    state[person].legs.push(legKey);
+    state[person].legs.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    // Auto-select cheapest if not already
+    if (!state[person].selected[legKey]) {
+      const leg = getLeg(legKey);
+      if (leg) {
+        const cheapest = leg.flights.reduce((a, b) => a.price < b.price ? a : b);
+        state[person].selected[legKey] = cheapest.id;
+      }
+    }
+    // Auto-select cheapest hotel for destination
+    const leg = getLeg(legKey);
+    if (leg && HOTELS_DB[leg.to] && !state[person].hotels[leg.to]) {
+      const cheapest = HOTELS_DB[leg.to].reduce((a, b) => a.ppn < b.ppn ? a : b);
+      state[person].hotels[leg.to] = cheapest.id;
+    }
+  }
+  saveState();
+  closeDropdown();
+  render();
+}
+
+// ===== DOWNLOAD =====
+function downloadItinerary() {
+  let text = 'EUROPE TRIP 2026 — ITINERARY\n';
+  text += '═'.repeat(40) + '\n\n';
+
+  ['fed', 'ani'].forEach(person => {
+    const label = person === 'fed' ? 'FEDERICO' : 'ANISSA';
+    const t = personTotal(person);
+    text += `${label} (Total: $${t.total.toLocaleString()} — flights $${t.flights} + hotels $${t.hotels})\n`;
+    text += '─'.repeat(40) + '\n';
+
+    state[person].legs.forEach(key => {
+      const leg = getLeg(key);
+      const flight = getSelectedFlight(person, key);
+      if (!leg || !flight) return;
+      text += `✈ ${leg.from} → ${leg.to}\n`;
+      text += `  ${flight.airline} · ${flight.date} · ${flight.dep}→${flight.arr} · ${flight.route} · $${flight.price}\n`;
+      if (leg.event && leg.event.name) {
+        text += `  📌 ${leg.event.name}${leg.event.date ? ' — ' + leg.event.date : ''}\n`;
+      }
+      // Hotel at destination
+      if (HOTELS_DB[leg.to]) {
+        const h = getSelectedHotel(person, leg.to);
+        if (h) text += `  🏨 ${h.name} · ${h.nights}n × $${h.ppn} = $${h.ppn * h.nights}\n`;
+      }
+      text += '\n';
+    });
+    text += '\n';
+  });
+
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'europe-trip-2026.txt';
+  a.click();
+}
+
+// ===== UTILS =====
+function buildSearchLink(flight, leg) {
+  if (flight.link) return flight.link;
+  const q = `${flight.airline} nonstop ${flight.route.replace('-', ' to ')} ${flight.date} 2026 one way`;
+  return `https://www.google.com/travel/flights?q=${encodeURIComponent(q)}`;
+}
+
+// ===== INIT =====
+render();
+</script>
+</body>
+</html>
