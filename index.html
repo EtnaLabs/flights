@@ -189,7 +189,7 @@ const FLIGHTS = {
     { id:"1h", al:"Delta", dep:"8:15PM", arr:"8:50AM+1", dur:"7h35m", rt:"JFK-LHR", $:395, dt:"Apr 25", note:"Red-eye" }
   ],
   "NYC->Lisbon":    [
-    { id:"a1a", al:"TAP", dep:"9:30PM", arr:"9:15AM+1", dur:"7h45m", rt:"JFK-LIS", $:420, dt:"Apr 29" },
+    { id:"a1a", al:"TAP TP210", dep:"10:05PM", arr:"10:15AM+1", dur:"7h10m", rt:"JFK-LIS", $:420, dt:"Apr 28" },
     { id:"a1b", al:"Azul", dep:"10:45PM", arr:"10:30AM+1", dur:"7h45m", rt:"JFK-LIS", $:450, dt:"Apr 29" }
   ],
   "London->Lisbon": [
@@ -253,7 +253,7 @@ const FED_ROUTE = [
 ];
 
 const ANI_ROUTE = [
-  { from: "NYC", to: "Lisbon", date: "Apr 29", selected: "a1a", booked: false },
+  { from: "NYC", to: "Lisbon", date: "Apr 28", selected: "a1a", booked: true, info: "TAP TP210 · JFK→LIS · Tue Apr 28 10:05PM → Wed Apr 29 10:15AM · Ref YGNUI8" },
   { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true, info: "Ryanair FR1143 · Seat 14C · 20kg bag · Plus · $257" },
   { from: "Berlin", to: "Palermo", date: "May 10", selected: "bp1", booked: false },
   { from: "Palermo", to: "NYC", date: "May 20–30", selected: "6a", booked: false }
