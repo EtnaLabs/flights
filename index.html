@@ -60,13 +60,18 @@
   .line-seg { width: 2px; height: 14px; background: var(--line); }
 
   .flight-node {
-    display: flex; align-items: center; gap: 6px; padding: 2px 0;
+    display: flex; align-items: center; gap: 6px;
     font-size: 0.85rem; cursor: pointer; border-radius: 6px;
     padding: 4px 12px; transition: background 0.15s;
   }
   .flight-node:hover { background: var(--hover); }
   .flight-node .plane { font-size: 0.85rem; }
   .flight-node .flight-date { font-weight: 700; }
+  .flight-node .booked-avatar {
+    width: 22px; height: 22px; border-radius: 50%; object-fit: cover;
+    border: 2px solid var(--green); cursor: pointer; transition: transform 0.15s;
+  }
+  .flight-node .booked-avatar:hover { transform: scale(1.15); }
 
   /* Footer */
   .footer { text-align: center; margin-top: 2rem; }
@@ -195,7 +200,7 @@ const LEGS = [
 const SK = 'eu-flights-v3';
 let st = load();
 function init() {
-  const s = { fed: {}, ani: {} };
+  const s = { fed: {}, ani: {}, booked: { fed: {}, ani: {} } };
   LEGS.forEach((l,i) => {
     const ch = l.flights.reduce((a,b) => a.$ < b.$ ? a : b);
     s.fed[i] = ch.id;
@@ -203,10 +208,22 @@ function init() {
   });
   return s;
 }
-function load() { try { const s = localStorage.getItem(SK); if(s) return JSON.parse(s); } catch(e){} return init(); }
+function load() {
+  try {
+    const s = localStorage.getItem(SK);
+    if (s) {
+      const parsed = JSON.parse(s);
+      if (!parsed.booked) parsed.booked = { fed: {}, ani: {} };
+      return parsed;
+    }
+  } catch(e){}
+  return init();
+}
 function save() { try { localStorage.setItem(SK, JSON.stringify(st)); } catch(e){} }
 function sel(p,i) { return LEGS[i].flights.find(f=>f.id===st[p][i]) || LEGS[i].flights[0]; }
 function total(p) { return LEGS.reduce((s,_,i)=> s + sel(p,i).$, 0); }
+function isBooked(p,i) { return !!st.booked[p][i]; }
+function toggleBooked(p,i) { st.booked[p][i] = !st.booked[p][i]; save(); }
 
 function render() {
   const tl = document.getElementById('timeline');
@@ -224,11 +241,27 @@ function render() {
   LEGS.forEach((leg, i) => {
     addLine();
 
-    // Flight node — clickable
+    // Flight node — clickable, with booked avatars
     const fn = document.createElement('div');
     fn.className = 'flight-node';
-    fn.innerHTML = `<span class="plane">✈</span><span class="flight-date">${leg.date}</span>`;
+    const fedBooked = isBooked('fed', i);
+    const aniBooked = isBooked('ani', i);
+    const fedFlight = sel('fed', i);
+    const aniFlight = sel('ani', i);
+    const fedLink = searchLink(fedFlight);
+    const aniLink = searchLink(aniFlight);
+
+    let leftAvatar = fedBooked ? `<img class="booked-avatar" src="${FED_IMG}" alt="F" data-link="${fedLink}" title="Federico: ${fedFlight.al} $${fedFlight.$}">` : '';
+    let rightAvatar = aniBooked ? `<img class="booked-avatar" src="${ANI_IMG}" alt="A" data-link="${aniLink}" title="Anissa: ${aniFlight.al} $${aniFlight.$}">` : '';
+
+    fn.innerHTML = `${leftAvatar}<span class="plane">✈</span><span class="flight-date">${leg.date}</span>${rightAvatar}`;
+    fn.querySelector('.flight-date').onclick = (e) => { e.stopPropagation(); openDD(i); };
+    fn.querySelector('.plane').onclick = (e) => { e.stopPropagation(); openDD(i); };
     fn.onclick = () => openDD(i);
+    // Avatar clicks open flight details
+    fn.querySelectorAll('.booked-avatar').forEach(img => {
+      img.onclick = (e) => { e.stopPropagation(); window.open(img.dataset.link, '_blank'); };
+    });
     add(fn);
 
     addLine();
@@ -262,8 +295,11 @@ function openDD(legIdx) {
     const label = p === 'fed' ? 'Federico' : 'Anissa';
     const img = p === 'fed' ? FED_IMG : ANI_IMG;
     const cur = sel(p, legIdx);
+    const booked = isBooked(p, legIdx);
     h += `<div style="padding:8px 16px 4px;font-size:0.78rem;font-weight:700;color:var(--text-muted);display:flex;align-items:center;gap:6px">
-      <img src="${img}" style="width:20px;height:20px;border-radius:50%;object-fit:cover">${label}</div>`;
+      <img src="${img}" style="width:20px;height:20px;border-radius:50%;object-fit:cover">${label}
+      <span onclick="toggleBooked('${p}',${legIdx});openDD(${legIdx})" style="margin-left:auto;cursor:pointer;font-size:0.7rem;padding:2px 8px;border-radius:4px;border:1px solid ${booked?'var(--green)':'var(--border)'};color:${booked?'var(--green)':'var(--text-muted)'};background:${booked?'var(--green-bg)':'transparent'}">${booked?'✓ Booked':'Book'}</span>
+    </div>`;
     leg.flights.forEach(f => {
       const ic = f.$ === cheap, is = f.id === cur.id;
       const link = searchLink(f);
