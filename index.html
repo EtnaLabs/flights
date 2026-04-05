@@ -203,6 +203,10 @@ const FLIGHTS = {
     { id:"4b", al:"Eurowings", dep:"8:15PM", arr:"9:40PM", dur:"1h25m", rt:"BER-ZRH", $:76, dt:"May 9" },
     { id:"4c", al:"SWISS", dep:"9:05AM", arr:"10:30AM", dur:"1h25m", rt:"BER-ZRH", $:101, dt:"May 9" }
   ],
+  "Lisbon->Catania": [
+    { id:"lc1", al:"Ryanair", dep:"6:30AM", arr:"10:30AM", dur:"3h", rt:"LIS-CTA", $:50, dt:"May 5" },
+    { id:"lc2", al:"easyJet", dep:"11:00AM", arr:"3:00PM", dur:"3h", rt:"LIS-CTA", $:75, dt:"May 5" }
+  ],
   "Zurich->Catania": [
     { id:"5a", al:"easyJet", dep:"6:00AM", arr:"8:30AM", dur:"2h30m", rt:"ZRH-CTA", $:90, dt:"May 11" },
     { id:"5b", al:"SWISS", dep:"12:00PM", arr:"2:25PM", dur:"2h25m", rt:"ZRH-CTA", $:150, dt:"May 11" }
@@ -233,9 +237,7 @@ const FED_ROUTE = [
 
 const ANI_ROUTE = [
   { from: "NYC", to: "Lisbon", date: "Apr 29", selected: "a1a", booked: false },
-  { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true },
-  { from: "Berlin", to: "Zurich", date: "May 9", selected: "4a", booked: false },
-  { from: "Zurich", to: "Catania", date: "May 11", selected: "5a", booked: false },
+  { from: "Lisbon", to: "Catania", date: "May 5", selected: "lc1", booked: false },
   { from: "Catania", to: "NYC", date: "May 20–30", selected: "6b", booked: false }
 ];
 
