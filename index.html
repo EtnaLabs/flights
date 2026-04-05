@@ -56,7 +56,11 @@
     .city-node .ev[style*="fef3c7"] { background: #422006 !important; color: #fbbf24 !important; }
   }
 
-  .line-seg { width: 2px; height: 14px; background: var(--line); }
+  .line-seg { width: 2px; height: 20px; background: var(--line); }
+  .line-seg.green { background: var(--green); }
+  .city-node.green .city-name { color: var(--green); }
+  .flight-node.green .plane { color: var(--green); }
+  .flight-node.green .flight-date { color: var(--green); }
 
   .flight-node {
     display: flex; align-items: center; gap: 6px;
@@ -159,6 +163,7 @@
         <span class="price" id="total-ani">$0</span>
       </div>
     </div>
+    <div style="margin-top:0.5rem;font-size:1.2rem;font-weight:800">Total <span id="total-combined">$0</span></div>
   </div>
   <div class="tl" id="tl"></div>
   <div class="footer">
@@ -324,7 +329,7 @@ function render() {
   const steps = buildTimeline();
 
   function add(el) { tl.appendChild(el); }
-  function addLine() { const d = document.createElement('div'); d.className = 'line-seg'; add(d); }
+  function addLine(green) { const d = document.createElement('div'); d.className = 'line-seg' + (green ? ' green' : ''); add(d); }
 
   function mkCity(city) {
     const ev = EVENTS[city];
@@ -342,11 +347,16 @@ function render() {
     n.innerHTML = `<span class="city-name">${city}</span>${evHtml}`;
     return n;
   }
+  function mkCityGreen(city, green) {
+    const n = mkCity(city);
+    if (green) n.classList.add('green');
+    return n;
+  }
 
-  function mkFlight(leg, person) {
+  function mkFlight(leg, person, green) {
     const f = selFlight(leg);
     const fn = document.createElement('div');
-    fn.className = 'flight-node';
+    fn.className = 'flight-node' + (green ? ' green' : '');
     let whoHtml = '';
     if (leg.booked) {
       const img = person === 'fed' ? FED_IMG : ANI_IMG;
@@ -362,20 +372,21 @@ function render() {
     return fn;
   }
 
-  steps.forEach(step => {
+  let prevBooked = false;
+  steps.forEach((step, si) => {
     if (step.type === 'city') {
-      addLine();
-      add(mkCity(step.city));
+      // City is green if the previous flight was booked
+      addLine(prevBooked);
+      add(mkCityGreen(step.city, prevBooked));
     }
     else if (step.type === 'flight') {
-      addLine();
+      const anyBooked = (step.fedLeg && step.fedLeg.booked) || (step.aniLeg && step.aniLeg.booked);
+      addLine(anyBooked);
+      prevBooked = anyBooked;
       if (step.both) {
-        // Shared leg — one node, click opens both
         const fn = document.createElement('div');
-        fn.className = 'flight-node';
+        fn.className = 'flight-node' + (anyBooked ? ' green' : '');
         const sharedF = selFlight(step.fedLeg);
-        const bothBooked = step.fedLeg.booked && step.aniLeg.booked;
-        const anyBooked = step.fedLeg.booked || step.aniLeg.booked;
         let leftWho = step.fedLeg.booked ? `<img class="who" src="${FED_IMG}" style="border-color:var(--fed)">` : '';
         let rightWho = step.aniLeg.booked ? `<img class="who" src="${ANI_IMG}" style="border-color:var(--ani)">` : '';
         if (anyBooked) {
@@ -389,7 +400,7 @@ function render() {
       } else {
         const leg = step.fedLeg || step.aniLeg;
         const person = step.fedLeg ? 'fed' : 'ani';
-        add(mkFlight(leg, person));
+        add(mkFlight(leg, person, anyBooked));
       }
     }
     else if (step.type === 'branch') {
@@ -444,8 +455,10 @@ function render() {
     }
   });
 
-  document.getElementById('total-fed').textContent = '$' + personTotal('fed').toLocaleString();
-  document.getElementById('total-ani').textContent = '$' + personTotal('ani').toLocaleString();
+  const ft = personTotal('fed'), at = personTotal('ani');
+  document.getElementById('total-fed').textContent = '$' + ft.toLocaleString();
+  document.getElementById('total-ani').textContent = '$' + at.toLocaleString();
+  document.getElementById('total-combined').textContent = '$' + (ft + at).toLocaleString();
 }
 
 // ===== DROPDOWNS =====
