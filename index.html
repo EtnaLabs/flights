@@ -239,17 +239,17 @@ const EVENTS = {
 
 // Per-person routes: array of { from, to, date }
 const FED_ROUTE = [
-  { from: "NYC", to: "London", date: "Apr 26", selected: "1d", booked: false },
-  { from: "London", to: "Lisbon", date: "Apr 29", selected: "2b", booked: true },
-  { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true },
-  { from: "Berlin", to: "Zurich", date: "May 8", selected: "4f", booked: true },
+  { from: "NYC", to: "London", date: "Apr 26", selected: "1d", booked: true, info: "JetBlue B6 1107 · JFK T5 → LHR · Ref WEJHRG · $375" },
+  { from: "London", to: "Lisbon", date: "Apr 29", selected: "2b", booked: true, info: "Ryanair · STN→LIS · $58" },
+  { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true, info: "Ryanair FR1143 · Seat 14B · 20kg bag · Plus · $257" },
+  { from: "Berlin", to: "Zurich", date: "May 8", selected: "4f", booked: true, info: "easyJet EJU5193 · BER T1 · Ref KCF87JM · $67" },
   { from: "Zurich", to: "Palermo", date: "May 10", selected: "zp1", booked: false },
   { from: "Palermo", to: "NYC", date: "May 20–30", selected: "6a", booked: false }
 ];
 
 const ANI_ROUTE = [
   { from: "NYC", to: "Lisbon", date: "Apr 29", selected: "a1a", booked: false },
-  { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true },
+  { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true, info: "Ryanair FR1143 · Seat 14C · 20kg bag · Plus · $257" },
   { from: "Berlin", to: "Palermo", date: "May 10", selected: "bp1", booked: false },
   { from: "Palermo", to: "NYC", date: "May 20–30", selected: "6a", booked: false }
 ];
@@ -339,7 +339,7 @@ function render() {
     }
     const n = document.createElement('div');
     n.className = 'city-node';
-    n.innerHTML = `<div class="dot"></div><span class="city-name">${city}</span>${evHtml}`;
+    n.innerHTML = `<span class="city-name">${city}</span>${evHtml}`;
     return n;
   }
 
@@ -485,6 +485,9 @@ function personSection(person, leg, fl, cheap) {
     <img src="${img}" style="width:20px;height:20px;border-radius:50%;object-fit:cover">${label}
     <span onclick="toggleBook('${person}',${legIdx})" style="margin-left:auto;cursor:pointer;font-size:0.7rem;padding:2px 8px;border-radius:4px;border:1px solid ${leg.booked?'var(--green)':'var(--border)'};color:${leg.booked?'var(--green)':'var(--text-muted)'};background:${leg.booked?'var(--green-bg)':'transparent'}">${leg.booked?'✓ Booked':'Book'}</span>
   </div>`;
+  if (leg.booked && leg.info) {
+    h += `<div style="padding:6px 16px;font-size:0.75rem;color:var(--green);background:var(--green-bg);margin:2px 8px 6px;border-radius:6px;border:1px solid var(--green)">${leg.info}</div>`;
+  }
   fl.forEach(f => {
     const ic = f.$ === cheap, is = f.id === leg.selected;
     const link = searchLink(f);
