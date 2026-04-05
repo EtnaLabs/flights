@@ -31,12 +31,7 @@
   .header { text-align: center; margin-bottom: 2rem; }
   .header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
   .header .dates { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem; }
-  .totals { display: flex; justify-content: center; gap: 2rem; margin-top: 0.75rem; }
-  .totals .person-total {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 1.1rem; font-weight: 700;
-  }
-  .totals img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+  .col-header .person-price { font-weight: 800; font-size: 1.05rem; color: var(--text); }
 
   /* Column headers */
   .col-headers {
@@ -89,6 +84,11 @@
   @media (prefers-color-scheme: dark) {
     .center-city .city-event { background: #1e3a5f; color: #93c5fd; }
   }
+  .center-city .city-hotel {
+    font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;
+    cursor: pointer; transition: color 0.15s;
+  }
+  .center-city .city-hotel:hover { color: var(--accent); }
   .center-city.dimmed { opacity: 0.3; }
 
   /* Flight connector in center */
@@ -120,14 +120,6 @@
     background: var(--bg); border: 1px solid var(--border);
     color: var(--text-muted); margin-right: 4px;
   }
-
-  /* Hotel line under flight card */
-  .hotel-line {
-    font-size: 0.72rem; color: var(--text-muted); padding: 0 12px;
-    margin: 0 8px 2px; cursor: pointer; transition: color 0.15s;
-  }
-  .hotel-line:hover { color: var(--accent); }
-  .hotel-line .hotel-name { font-weight: 600; }
 
   /* Grayed placeholder */
   .leg-placeholder {
@@ -237,21 +229,12 @@
   <div class="header">
     <h1>Europe Trip 2026</h1>
     <div class="dates">Apr 25 – May 2026</div>
-    <div class="totals">
-      <div class="person-total" id="total-fed">
-        <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/fed.jpg" alt="Federico">
-        <span>$0</span>
-      </div>
-      <div class="person-total" id="total-ani">
-        <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/anissa.jpg" alt="Anissa">
-        <span>$0</span>
-      </div>
-    </div>
   </div>
 
   <!-- Column headers -->
   <div class="col-headers">
     <div class="col-header left">
+      <span class="person-price" id="total-fed">$0</span>
       <span class="name">Federico</span>
       <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/fed.jpg" alt="Federico">
     </div>
@@ -259,6 +242,7 @@
     <div class="col-header right">
       <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/anissa.jpg" alt="Anissa">
       <span class="name">Anissa</span>
+      <span class="person-price" id="total-ani">$0</span>
     </div>
   </div>
 
@@ -371,7 +355,7 @@ const STORAGE = 'eu-flights-v2';
 let state = loadState();
 
 function defaultState() {
-  const s = { fed: { legs: [], hotels: {}, selected: {} }, ani: { legs: [], hotels: {}, selected: {} } };
+  const s = { fed: { legs: [], selected: {} }, ani: { legs: [], selected: {} }, hotels: {} };
   LEGS_DB.forEach(leg => {
     const key = leg.from + '->' + leg.to;
     s.fed.legs.push(key);
@@ -382,8 +366,7 @@ function defaultState() {
   });
   for (const city in HOTELS_DB) {
     const cheapest = HOTELS_DB[city].reduce((a, b) => a.ppn < b.ppn ? a : b);
-    s.fed.hotels[city] = cheapest.id;
-    s.ani.hotels[city] = cheapest.id;
+    s.hotels[city] = cheapest.id;
   }
   return s;
 }
@@ -401,10 +384,10 @@ function getSelectedFlight(person, legKey) {
   const id = state[person].selected[legKey];
   return leg.flights.find(f => f.id === id) || leg.flights[0];
 }
-function getSelectedHotel(person, city) {
+function getSelectedHotel(city) {
   const hotels = HOTELS_DB[city];
   if (!hotels) return null;
-  const id = state[person].hotels[city];
+  const id = state.hotels[city];
   return hotels.find(h => h.id === id) || hotels[0];
 }
 function personTotal(person) {
@@ -419,7 +402,7 @@ function personTotal(person) {
     if (leg && leg.to !== "New York City") cities.add(leg.to);
   });
   cities.forEach(city => {
-    const h = getSelectedHotel(person, city);
+    const h = getSelectedHotel(city);
     if (h) hotels += h.ppn * h.nights;
   });
   return { flights, hotels, total: flights + hotels };
@@ -490,21 +473,11 @@ function render() {
     // ---- CITY ROW ----
     const arrLeg = legArrivingAt(city);
 
-    // Left: Federico hotel
+    // Left: empty for city row
     const leftCity = document.createElement('div');
     leftCity.className = 'person-col left';
-    if (fedCities.has(city) && HOTELS_DB[city]) {
-      const h = getSelectedHotel('fed', city);
-      if (h) {
-        const hl = document.createElement('div');
-        hl.className = 'hotel-line';
-        hl.innerHTML = `🏨 <span class="hotel-name">${h.name}</span> · $${h.ppn}/n · <b>$${h.ppn * h.nights}</b>`;
-        hl.onclick = () => openHotelDropdown('fed', city);
-        leftCity.appendChild(hl);
-      }
-    }
 
-    // Center: city name, dates, stay info, event
+    // Center: city name, dates, stay info, event, hotel
     const centerCity = document.createElement('div');
     centerCity.className = 'center-col';
     const cc = document.createElement('div');
@@ -525,29 +498,32 @@ function render() {
       eventHtml = link;
     }
 
+    let hotelHtml = '';
+    if (HOTELS_DB[city] && eitherHas) {
+      const h = getSelectedHotel(city);
+      if (h) hotelHtml = `<div class="city-hotel" data-city="${city}">🏨 ${h.name} · <b>$${h.ppn * h.nights}</b></div>`;
+    }
+
     cc.innerHTML = `
       <div class="dot"></div>
       <div class="city-name">${city}</div>
       ${dateStr ? `<div class="city-dates">${dateStr}</div>` : ''}
       ${stayStr ? `<div class="city-stay">${stayStr}</div>` : ''}
       ${eventHtml}
+      ${hotelHtml}
     `;
     centerCity.appendChild(document.createElement('div')); // spacer
     centerCity.appendChild(cc);
 
-    // Right: Anissa hotel
+    // Wire up hotel click
+    const hotelEl = cc.querySelector('.city-hotel');
+    if (hotelEl) {
+      hotelEl.onclick = () => openHotelDropdown(city);
+    }
+
+    // Right: empty for city row
     const rightCity = document.createElement('div');
     rightCity.className = 'person-col right';
-    if (aniCities.has(city) && HOTELS_DB[city]) {
-      const h = getSelectedHotel('ani', city);
-      if (h) {
-        const hl = document.createElement('div');
-        hl.className = 'hotel-line';
-        hl.innerHTML = `🏨 <span class="hotel-name">${h.name}</span> · $${h.ppn}/n · <b>$${h.ppn * h.nights}</b>`;
-        hl.onclick = () => openHotelDropdown('ani', city);
-        rightCity.appendChild(hl);
-      }
-    }
 
     timeline.appendChild(leftCity);
     timeline.appendChild(centerCity);
@@ -603,8 +579,8 @@ function renderLegCard(person, legKey) {
 
 function updateTotals() {
   const ft = personTotal('fed'), at = personTotal('ani');
-  document.getElementById('total-fed').querySelector('span').textContent = '$' + ft.total.toLocaleString();
-  document.getElementById('total-ani').querySelector('span').textContent = '$' + at.total.toLocaleString();
+  document.getElementById('total-fed').textContent = '$' + ft.total.toLocaleString();
+  document.getElementById('total-ani').textContent = '$' + at.total.toLocaleString();
 }
 
 // ===== DROPDOWNS =====
@@ -638,20 +614,19 @@ function openFlightDropdown(person, legKey) {
   document.getElementById('overlay').classList.add('open');
 }
 
-function openHotelDropdown(person, city) {
+function openHotelDropdown(city) {
   const hotels = HOTELS_DB[city];
   if (!hotels) return;
   const panel = document.getElementById('dropdown-panel');
   const cheapest = Math.min(...hotels.map(h => h.ppn));
-  const selected = getSelectedHotel(person, city);
-  const label = person === 'fed' ? 'Federico' : 'Anissa';
-  let html = `<h3>🏨 ${city} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">· ${label}</span></h3>`;
+  const selected = getSelectedHotel(city);
+  let html = `<h3>🏨 ${city}</h3>`;
   hotels.forEach(h => {
     const isCheap = h.ppn === cheapest, isSel = selected && h.id === selected.id;
     const total = h.ppn * h.nights;
     html += `
       <div class="dd-option ${isSel ? 'selected' : ''} ${isCheap ? 'cheapest' : ''}"
-           onclick="selectHotel('${person}','${city}','${h.id}')">
+           onclick="selectHotel('${city}','${h.id}')">
         <div class="radio"></div>
         <div class="opt-details">
           <div><span class="opt-airline">${h.name}</span> ${isCheap ? '<span class="cheapest-tag">Cheapest</span>' : ''}</div>
@@ -668,8 +643,8 @@ function selectFlight(person, legKey, flightId) {
   state[person].selected[legKey] = flightId;
   saveState(); closeDropdown(); render();
 }
-function selectHotel(person, city, hotelId) {
-  state[person].hotels[city] = hotelId;
+function selectHotel(city, hotelId) {
+  state.hotels[city] = hotelId;
   saveState(); closeDropdown(); render();
 }
 
@@ -713,8 +688,8 @@ function addLeg(person, legKey) {
       if (leg) state[person].selected[legKey] = leg.flights.reduce((a, b) => a.price < b.price ? a : b).id;
     }
     const leg = getLeg(legKey);
-    if (leg && HOTELS_DB[leg.to] && !state[person].hotels[leg.to]) {
-      state[person].hotels[leg.to] = HOTELS_DB[leg.to].reduce((a, b) => a.ppn < b.ppn ? a : b).id;
+    if (leg && HOTELS_DB[leg.to] && !state.hotels[leg.to]) {
+      state.hotels[leg.to] = HOTELS_DB[leg.to].reduce((a, b) => a.ppn < b.ppn ? a : b).id;
     }
   }
   saveState(); closeDropdown(); render();
@@ -734,7 +709,7 @@ function downloadItinerary() {
       text += `  ${flight.airline} · ${flight.date} · ${flight.dep}→${flight.arr} · ${flight.route} · $${flight.price}\n`;
       if (leg.event && leg.event.name) text += `  📌 ${leg.event.name}${leg.event.date ? ' — ' + leg.event.date : ''}\n`;
       if (HOTELS_DB[leg.to]) {
-        const h = getSelectedHotel(person, leg.to);
+        const h = getSelectedHotel(leg.to);
         if (h) text += `  🏨 ${h.name} · ${h.nights}n × $${h.ppn} = $${h.ppn * h.nights}\n`;
       }
     });
