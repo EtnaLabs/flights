@@ -51,7 +51,10 @@
     background: #dbeafe; color: #1d4ed8; text-decoration: none;
   }
   .city-node .ev:hover { text-decoration: underline; }
-  @media (prefers-color-scheme: dark) { .city-node .ev { background: #1e3a5f; color: #93c5fd; } }
+  @media (prefers-color-scheme: dark) {
+    .city-node .ev { background: #1e3a5f; color: #93c5fd; }
+    .city-node .ev[style*="fef3c7"] { background: #422006 !important; color: #fbbf24 !important; }
+  }
 
   .line-seg { width: 2px; height: 14px; background: var(--line); }
 
@@ -211,7 +214,7 @@ const FLIGHTS = {
 
 const EVENTS = {
   "London":  { date: "Apr 28", name: "AI London 1.0", link: "https://lu.ma/ai-london-1.0" },
-  "Lisbon":  { date: "May 1", name: "Lisbon event", link: "https://lu.ma/cicip0jl" },
+  "Lisbon":  { date: "May 1", name: "Lisbon event", link: "https://lu.ma/cicip0jl", stay: "Airbnb", stayLink: "https://www.airbnb.com/trips/v1/reservation-details/ro/RESERVATION2_CHECKIN/HM3H32K3QD" },
   "Berlin":  { date: "May 6", name: "Berlin event" },
   "Zurich":  { date: "May 9", name: "Zurich event", link: "https://lu.ma/68ig9kd0" },
   "Catania": { date: "May 11–22", name: "Sicily stay" }
@@ -314,6 +317,9 @@ function render() {
       evHtml = ev.link
         ? `<a class="ev" href="${ev.link}" target="_blank">${ev.date}</a>`
         : `<span class="ev">${ev.date}</span>`;
+      if (ev.stayLink) {
+        evHtml += ` <a class="ev" href="${ev.stayLink}" target="_blank" style="background:#fef3c7;color:#92400e">🏠 ${ev.stay}</a>`;
+      }
     }
     const n = document.createElement('div');
     n.className = 'city-node';
