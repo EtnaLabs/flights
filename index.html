@@ -3,115 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Europe Trip — Federico & Anissa</title>
+<title>Euro Trip 2026</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #ffffff; --bg-card: #f8f9fa; --text: #111; --text-muted: #6b7280;
-    --border: #e5e7eb; --line: #d1d5db; --dot: #9ca3af; --accent: #3b82f6;
-    --green: #16a34a; --green-bg: #f0fdf4; --hover: #f3f4f6;
-    --shadow: 0 4px 24px rgba(0,0,0,0.08);
-    --fed: #3b82f6; --ani: #ec4899;
+    --bg: #fafafa; --bg-card: #ffffff; --text: #1a1a2e; --text-muted: #8892a4;
+    --border: #e8ecf1; --line: #c9d1dc; --dot: #b0b8c8; --accent: #4f6ef7;
+    --green: #22c55e; --green-bg: #ecfdf5; --hover: #f5f7fa;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 6px 24px rgba(0,0,0,0.06);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.08);
+    --fed: #4f6ef7; --ani: #e74694;
+    --radius: 12px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0a0a0a; --bg-card: #151515; --text: #f0f0f0; --text-muted: #888;
-      --border: #2a2a2a; --line: #333; --dot: #555; --accent: #3b82f6;
-      --green: #4ade80; --green-bg: #0a1f0a; --hover: #222;
-      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+      --bg: #0c0c14; --bg-card: #16172a; --text: #e8ecf1; --text-muted: #6b7594;
+      --border: #262840; --line: #363a54; --dot: #4a4f6a; --accent: #6b8aff;
+      --green: #4ade80; --green-bg: #0a1f15; --hover: #1e2038;
+      --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 6px 24px rgba(0,0,0,0.3);
+      --shadow-lg: 0 4px 12px rgba(0,0,0,0.3), 0 16px 40px rgba(0,0,0,0.4);
     }
   }
   body {
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: var(--bg); color: var(--text);
     line-height: 1.6; min-height: 100vh; padding: 2rem 1rem 4rem;
+    -webkit-font-smoothing: antialiased;
   }
-  .container { max-width: 700px; margin: 0 auto; }
+  .container { max-width: 640px; margin: 0 auto; }
 
+  /* Header */
   .header { text-align: center; margin-bottom: 2.5rem; }
-  .header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
-  .header .dates { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.15rem; }
-  .avatars { display: flex; justify-content: center; gap: 16px; margin-top: 0.75rem; }
-  .avatar-group { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; }
-  .avatar-group img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
-  .avatar-group .price { font-weight: 800; }
+  .header-row {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .header h1 {
+    font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--fed), var(--ani));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .avatars {
+    display: flex; gap: 6px;
+  }
+  .header-avatar {
+    width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+    border: 2px solid var(--border); transition: transform 0.2s;
+  }
+  .header-avatar:hover { transform: scale(1.1); }
 
   /* Timeline */
-  .tl { display: flex; flex-direction: column; align-items: center; }
+  .tl { display: flex; flex-direction: column; align-items: center; position: relative; }
 
-  .city-node { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
-  .city-node .dot {
-    width: 12px; height: 12px; border-radius: 50%; background: var(--dot);
-    border: 3px solid var(--bg); box-shadow: 0 0 0 2px var(--dot); flex-shrink: 0;
+  /* City nodes */
+  .city-node {
+    display: flex; align-items: center; gap: 12px; padding: 4px 18px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 50px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative; z-index: 2;
+    transition: transform 0.15s, box-shadow 0.15s;
   }
-  .city-node .city-name { font-size: 1.15rem; font-weight: 800; }
+  .city-node:hover { transform: scale(1.03); box-shadow: var(--shadow); }
+  .city-node .city-name { font-size: 0.88rem; font-weight: 800; letter-spacing: -0.01em; }
   .city-node .ev {
-    display: inline-block; font-size: 0.68rem; font-weight: 600;
-    padding: 2px 8px; border-radius: 4px; margin-left: 4px;
-    background: #dbeafe; color: #1d4ed8; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.68rem; font-weight: 600;
+    padding: 2px 10px; border-radius: 20px; text-decoration: none;
+    background: rgba(79,110,247,0.1); color: var(--accent);
+    transition: background 0.15s;
   }
-  .city-node .ev:hover { text-decoration: underline; }
+  .city-node .ev:hover { background: rgba(79,110,247,0.2); }
+  .city-node .ev.stay { background: rgba(251,191,36,0.15); color: #b45309; }
   @media (prefers-color-scheme: dark) {
-    .city-node .ev { background: #1e3a5f; color: #93c5fd; }
-    .city-node .ev[style*="fef3c7"] { background: #422006 !important; color: #fbbf24 !important; }
+    .city-node .ev.stay { background: rgba(251,191,36,0.1); color: #fbbf24; }
   }
 
-  .line-seg { width: 2px; height: 20px; background: var(--line); }
+  /* Vertical connectors */
+  .line-seg {
+    width: 2px; height: 12px; flex-shrink: 0; position: relative; z-index: 1;
+    background: var(--line);
+  }
+  .line-seg.booked {
+    background: linear-gradient(to bottom, var(--green), var(--green));
+    box-shadow: 0 0 8px rgba(34,197,94,0.25);
+  }
 
+  /* Flight nodes */
   .flight-node {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 0.85rem; cursor: pointer; border-radius: 6px;
-    padding: 4px 12px; transition: background 0.15s;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; cursor: pointer; border-radius: 8px;
+    padding: 4px 16px; transition: all 0.15s; position: relative; z-index: 2;
+    background: var(--bg-card); border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
-  .flight-node:hover { background: var(--hover); }
-  .flight-node .plane { font-size: 0.85rem; }
+  .flight-node:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,110,247,0.1); }
+  .flight-node.booked { border-color: var(--green); background: var(--green-bg); }
+  .flight-node .plane { font-size: 0.9rem; }
   .flight-node .flight-date {
-    font-weight: 700; color: var(--text); text-decoration: none;
+    font-weight: 700; color: var(--text); text-decoration: none; font-size: 0.82rem;
   }
-  .flight-node .flight-date:hover { color: var(--accent); text-decoration: underline; }
-  .flight-node .who {
-    width: 20px; height: 20px; border-radius: 50%; object-fit: cover;
-    border: 2px solid var(--green);
-  }
+  .flight-node .flight-date:hover { color: var(--accent); }
 
-  /* Branch: two columns */
-  .branch { display: grid; grid-template-columns: 1fr 1fr; gap: 0; width: 100%; max-width: 500px; }
+  /* Branch */
+  .branch {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch;
+    width: 100%; max-width: 480px; margin: 0;
+  }
   .branch-side { display: flex; flex-direction: column; align-items: center; }
-  .branch-side .line-seg { height: 10px; }
-  .branch-label {
-    font-size: 0.65rem; font-weight: 700; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;
-    display: flex; align-items: center; gap: 4px;
+  .branch-side .line-seg { height: 12px; }
+  .branch-side .line-seg.grow { flex: 1; min-height: 12px; }
+  .branch-side .city-node { font-size: 0.85rem; padding: 5px 14px; }
+  .branch-side .city-node .city-name { font-size: 0.85rem; }
+  .branch-side .flight-node { font-size: 0.78rem; padding: 4px 12px; }
+
+  /* Fork/merge SVGs with bezier curves */
+  .fork-svg {
+    width: 100%; max-width: 480px; height: 36px; display: block; margin: 0;
+    position: relative; z-index: 1;
   }
-  .branch-label img { width: 16px; height: 16px; border-radius: 50%; object-fit: cover; }
 
-  /* Fork lines */
-  .fork-out, .fork-in { width: 100%; max-width: 500px; height: 20px; position: relative; }
-  .fork-out::before, .fork-out::after,
-  .fork-in::before, .fork-in::after {
-    content: ''; position: absolute; top: 0; bottom: 0; width: 2px; background: var(--line);
-  }
-  .fork-out::before { left: 50%; top: 0; height: 50%; }
-  .fork-out::after { display: none; }
-  .fork-in::before { left: 25%; }
-  .fork-in::after { right: 25%; left: auto; }
-
-  .fork-svg { width: 100%; max-width: 500px; height: 24px; }
-
-  /* Dropdown */
+  /* Dropdown / Modal */
   .overlay {
     display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.3); z-index: 100;
+    background: rgba(0,0,0,0.4); z-index: 100;
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   }
   .overlay.open { display: flex; align-items: center; justify-content: center; }
   .panel {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 14px;
-    box-shadow: var(--shadow); width: 420px; max-width: 92vw; max-height: 80vh; overflow-y: auto;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow-lg); width: 440px; max-width: 92vw; max-height: 80vh;
+    overflow-y: auto; animation: panelIn 0.2s ease-out;
   }
-  .panel h3 { padding: 14px 16px 10px; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
+  @keyframes panelIn { from { opacity: 0; transform: scale(0.95) translateY(8px); } to { opacity: 1; transform: none; } }
+  .panel h3 {
+    padding: 16px 20px 12px; font-size: 0.9rem; font-weight: 700;
+    border-bottom: 1px solid var(--border); letter-spacing: -0.01em;
+  }
   .dd-opt {
-    padding: 10px 16px; cursor: pointer; display: flex; align-items: center;
-    gap: 10px; border-bottom: 1px solid var(--border); font-size: 0.82rem;
+    padding: 12px 20px; cursor: pointer; display: flex; align-items: center;
+    gap: 12px; border-bottom: 1px solid var(--border); font-size: 0.82rem;
     transition: background 0.1s;
   }
   .dd-opt:last-child { border-bottom: none; }
@@ -119,8 +148,9 @@
   .dd-opt.sel { background: var(--hover); }
   .dd-opt.cheap { background: var(--green-bg); }
   .dd-opt .radio {
-    width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border);
+    width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border);
     flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.15s;
   }
   .dd-opt.sel .radio { border-color: var(--accent); }
   .dd-opt.sel .radio::after { content:''; width:8px; height:8px; border-radius:50%; background:var(--accent); }
@@ -128,38 +158,39 @@
   .dd-opt .airline { font-weight: 600; }
   .dd-opt .times { color: var(--text-muted); font-size: 0.75rem; }
   .dd-opt .note { color: var(--accent); font-size: 0.7rem; }
-  .dd-opt .price { font-weight: 700; flex-shrink: 0; text-align: right; }
+  .dd-opt .price { font-weight: 800; flex-shrink: 0; text-align: right; font-size: 0.9rem; }
   .dd-opt.cheap .price { color: var(--green); }
-  .cheap-tag { font-size:0.58rem; font-weight:600; color:var(--green); background:var(--green-bg); padding:1px 5px; border-radius:3px; text-transform:uppercase; }
-
-  .footer { text-align: center; margin-top: 2rem; }
-  .dl-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--bg-card); color: var(--text); font-size: 0.8rem;
-    font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s;
+  .cheap-tag {
+    font-size: 0.58rem; font-weight: 700; color: var(--green);
+    background: var(--green-bg); padding: 2px 6px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.03em;
   }
-  .dl-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .footer { text-align: center; margin-top: 2.5rem; }
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 50px; border: 1px solid var(--border);
+    background: var(--bg-card); color: var(--text); font-size: 0.82rem;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: all 0.2s; box-shadow: var(--shadow);
+  }
+  .dl-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: var(--shadow-lg); }
+
+  /* Hidden elements */
+  .hidden { display: none; }
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <h1>Europe Trip 2026</h1>
-    <div class="dates">Apr 25 – May 2026</div>
-    <div class="avatars">
-      <div class="avatar-group">
-        <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/fed.jpg" alt="F">
-        <span>Federico</span>
-        <span class="price" id="total-fed">$0</span>
-      </div>
-      <div class="avatar-group">
-        <img src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/anissa.jpg" alt="A">
-        <span>Anissa</span>
-        <span class="price" id="total-ani">$0</span>
+    <div class="header-row">
+      <h1>Euro Trip 2026</h1>
+      <div class="avatars">
+        <img class="header-avatar" src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/fed.jpg" alt="F">
+        <img class="header-avatar" src="https://dfxibpwgdyotcrdsxdib.supabase.co/storage/v1/object/public/team-images/anissa.jpg" alt="A">
       </div>
     </div>
-    <div style="margin-top:0.5rem;font-size:1.2rem;font-weight:800">Total <span id="total-combined">$0</span></div>
+    <div class="hidden">Total <span id="total-combined">$0</span></div>
   </div>
   <div class="tl" id="tl"></div>
   <div class="footer">
@@ -220,13 +251,13 @@ const FLIGHTS = {
     { id:"5b", al:"SWISS", dep:"12:00PM", arr:"2:25PM", dur:"2h25m", rt:"ZRH-CTA", $:150, dt:"May 11" }
   ],
   "Catania->NYC":   [
-    { id:"6b", al:"Delta", dep:"10:00AM", arr:"2:16PM", dur:"10h16m", rt:"CTA-JFK", $:1183, dt:"May 20–30", note:"4x/week" },
-    { id:"6a", al:"United", dep:"9:45AM", arr:"2:05PM", dur:"10h20m", rt:"PMO-EWR", $:1286, dt:"May 20–30", note:"From Palermo" }
+    { id:"6b", al:"Delta", dep:"10:00AM", arr:"2:16PM", dur:"10h16m", rt:"CTA-JFK", $:1183, dt:"May 20-30", note:"4x/week" },
+    { id:"6a", al:"United", dep:"9:45AM", arr:"2:05PM", dur:"10h20m", rt:"PMO-EWR", $:1286, dt:"May 20-30", note:"From Palermo" }
   ],
   "Palermo->NYC":   [
-    { id:"6a", al:"United", dep:"9:45AM", arr:"2:05PM", dur:"10h20m", rt:"PMO-EWR", $:1286, dt:"May 20–30", note:"Mon/Thu/Sat" },
-    { id:"6b2", al:"Delta via Rome", dep:"7:00AM", arr:"3:00PM", dur:"14h", rt:"PMO-FCO-JFK", $:900, dt:"May 20–30", note:"1 stop" }
-  ]
+    { id:"6a", al:"United", dep:"9:45AM", arr:"2:05PM", dur:"10h20m", rt:"PMO-EWR", $:1286, dt:"May 20-30", note:"Mon/Thu/Sat" },
+    { id:"6b2", al:"Delta via Rome", dep:"7:00AM", arr:"3:00PM", dur:"14h", rt:"PMO-FCO-JFK", $:900, dt:"May 20-30", note:"1 stop" }
+  ],
 };
 
 const EVENTS = {
@@ -234,28 +265,29 @@ const EVENTS = {
   "Lisbon":  { date: "May 1", name: "Lisbon event", link: "https://lu.ma/cicip0jl", stay: "Airbnb", stayLink: "https://www.airbnb.com/trips/v1/reservation-details/ro/RESERVATION2_CHECKIN/HM3H32K3QD" },
   "Berlin":  { date: "May 6", name: "Berlin event" },
   "Zurich":  { date: "May 9", name: "Zurich event", link: "https://lu.ma/68ig9kd0" },
-  "Catania": { date: "May 11–22", name: "Sicily stay" },
-  "Palermo": { date: "May 10–22", name: "Sicily stay" }
+  "Catania": { date: "May 11-22", name: "Sicily stay" },
+  "Palermo": { date: "May 10-22", name: "Sicily stay" }
 };
 
-// Per-person routes: array of { from, to, date }
+// Per-person routes
 const FED_ROUTE = [
-  { from: "NYC", to: "London", date: "Apr 26", selected: "1d", booked: true, info: "JetBlue B6 1107 · JFK T5 → LHR · Ref WEJHRG · $375" },
-  { from: "London", to: "Lisbon", date: "Apr 29", selected: "2b", booked: true, info: "Ryanair · STN→LIS · $58" },
+  { from: "NYC", to: "London", date: "Apr 26", selected: "1d", booked: true, info: "JetBlue B6 1107 · JFK T5 -> LHR · Ref WEJHRG · $375" },
+  { from: "London", to: "Lisbon", date: "Apr 29", selected: "2b", booked: true, info: "Ryanair · STN->LIS · $58" },
   { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true, info: "Ryanair FR1143 · Seat 14B · 20kg bag · Plus · $257" },
   { from: "Berlin", to: "Zurich", date: "May 8", selected: "4f", booked: true, info: "easyJet EJU5193 · BER T1 · Ref KCF87JM · $67" },
   { from: "Zurich", to: "Palermo", date: "May 10", selected: "zp1", booked: false },
-  { from: "Palermo", to: "NYC", date: "May 20–30", selected: "6a", booked: false }
+  { from: "Palermo", to: "NYC", date: "May 20-30", selected: "6a", booked: false }
 ];
 
 const ANI_ROUTE = [
-  { from: "NYC", to: "Lisbon", date: "Apr 28", selected: "a1a", booked: true, info: "TAP TP210 · JFK→LIS · Tue Apr 28 10:05PM → Wed Apr 29 10:15AM · Ref YGNUI8" },
+  { from: "NYC", to: "Lisbon", date: "Apr 28", selected: "a1a", booked: true, info: "TAP TP210 · JFK->LIS · Tue Apr 28 10:05PM -> Wed Apr 29 10:15AM · Ref YGNUI8" },
   { from: "Lisbon", to: "Berlin", date: "May 5", selected: "3a", booked: true, info: "Ryanair FR1143 · Seat 14C · 20kg bag · Plus · $257" },
   { from: "Berlin", to: "Palermo", date: "May 10", selected: "bp1", booked: false },
-  { from: "Palermo", to: "NYC", date: "May 20–30", selected: "6a", booked: false }
+  { from: "Palermo", to: "NYC", date: "May 20-30", selected: "6a", booked: false }
 ];
 
 const ROUTES = { fed: FED_ROUTE, ani: ANI_ROUTE };
+const AIRBNB_COST = 0;
 
 function key(leg) { return leg.from + '->' + leg.to; }
 function flights(leg) { return FLIGHTS[key(leg)] || []; }
@@ -270,23 +302,18 @@ function buildTimeline() {
   let fi = 0, ai = 0;
   const fr = FED_ROUTE, ar = ANI_ROUTE;
 
-  // Both start at NYC
   steps.push({ type: 'city', city: 'NYC' });
 
-  // Check if first legs go to the same place
   while (fi < fr.length || ai < ar.length) {
     const fLeg = fi < fr.length ? fr[fi] : null;
     const aLeg = ai < ar.length ? ar[ai] : null;
 
-    // Same leg (same from->to)?
     if (fLeg && aLeg && fLeg.from === aLeg.from && fLeg.to === aLeg.to) {
       steps.push({ type: 'flight', both: true, fedLeg: fLeg, aniLeg: aLeg, date: fLeg.date });
       steps.push({ type: 'city', city: fLeg.to });
       fi++; ai++;
     }
-    // Same origin but different destinations — branch
     else if (fLeg && aLeg && fLeg.from === aLeg.from && fLeg.to !== aLeg.to) {
-      // Find where they converge again
       const fedCities = fr.slice(fi).map(l => l.to);
       const aniCities = ar.slice(ai).map(l => l.to);
       let mergeCity = null;
@@ -301,13 +328,11 @@ function buildTimeline() {
       steps.push({ type: 'branch', fedLegs: fedBranch, aniLegs: aniBranch, mergeCity });
       if (mergeCity) steps.push({ type: 'city', city: mergeCity });
     }
-    // Only fed has a leg
     else if (fLeg && (!aLeg || fLeg.from !== aLeg.from)) {
       steps.push({ type: 'flight', both: false, fedLeg: fLeg, aniLeg: null, date: fLeg.date });
       steps.push({ type: 'city', city: fLeg.to });
       fi++;
     }
-    // Only ani has a leg
     else if (aLeg) {
       steps.push({ type: 'flight', both: false, fedLeg: null, aniLeg: aLeg, date: aLeg.date });
       steps.push({ type: 'city', city: aLeg.to });
@@ -325,17 +350,21 @@ function render() {
   const steps = buildTimeline();
 
   function add(el) { tl.appendChild(el); }
-  function addLine(green) { const d = document.createElement('div'); d.className = 'line-seg' + (green ? ' green' : ''); add(d); }
+  function addLine(booked) {
+    const d = document.createElement('div');
+    d.className = 'line-seg' + (booked ? ' booked' : '');
+    add(d);
+  }
 
   function mkCity(city) {
     const ev = EVENTS[city];
     let evHtml = '';
     if (ev) {
       evHtml = ev.link
-        ? `<a class="ev" href="${ev.link}" target="_blank">${ev.date}</a>`
-        : `<span class="ev">${ev.date}</span>`;
+        ? ` <a class="ev" href="${ev.link}" target="_blank">${ev.date}</a>`
+        : ` <span class="ev">${ev.date}</span>`;
       if (ev.stayLink) {
-        evHtml += ` <a class="ev" href="${ev.stayLink}" target="_blank" style="background:#fef3c7;color:#92400e">🏠 ${ev.stay}</a>`;
+        evHtml += ` <a class="ev stay" href="${ev.stayLink}" target="_blank">${ev.stay}</a>`;
       }
     }
     const n = document.createElement('div');
@@ -343,37 +372,49 @@ function render() {
     n.innerHTML = `<span class="city-name">${city}</span>${evHtml}`;
     return n;
   }
-  function mkCityGreen(city, green) {
-    const n = mkCity(city);
-    if (green) n.classList.add('green');
-    return n;
-  }
 
-  function mkFlight(leg, person, green) {
+  function mkFlight(leg, person) {
     const f = selFlight(leg);
     const fn = document.createElement('div');
-    fn.className = 'flight-node' + (green ? ' green' : '');
-    let whoHtml = '';
+    fn.className = 'flight-node' + (leg.booked ? ' booked' : '');
     if (leg.booked) {
-      const img = person === 'fed' ? FED_IMG : ANI_IMG;
-      whoHtml = `<img class="who" src="${img}">`;
-    }
-    if (leg.booked) {
-      fn.innerHTML = `${whoHtml}<span class="plane">✈</span><span class="flight-date" style="cursor:pointer">${leg.date}</span>`;
+      fn.innerHTML = `<span class="plane">✈</span><span class="flight-date" style="cursor:pointer">${leg.date}</span>`;
       fn.onclick = () => showBookingInfo(person, leg);
     } else {
-      fn.innerHTML = `${whoHtml}<span class="plane" title="Change flight">✈</span><a class="flight-date" href="${searchLink(f)}" target="_blank">${leg.date}</a>`;
+      fn.innerHTML = `<span class="plane" title="Change flight">✈</span><a class="flight-date" href="${searchLink(f)}" target="_blank">${leg.date}</a>`;
       fn.querySelector('.plane').onclick = (e) => { e.stopPropagation(); openDD(person, leg); };
     }
     return fn;
   }
 
+  // SVG fork with smooth bezier curves
+  function mkForkSVG(direction) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'fork-svg');
+    svg.setAttribute('viewBox', '0 0 480 36');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    const c = 'var(--line)';
+    if (direction === 'out') {
+      // Center top -> left-col center bottom, center top -> right-col center bottom
+      svg.innerHTML = `
+        <path d="M240 0 C240 20, 120 16, 120 36" stroke="${c}" stroke-width="2" fill="none" vector-effect="non-scaling-stroke"/>
+        <path d="M240 0 C240 20, 360 16, 360 36" stroke="${c}" stroke-width="2" fill="none" vector-effect="non-scaling-stroke"/>
+      `;
+    } else {
+      // Left-col center top -> center bottom, right-col center top -> center bottom
+      svg.innerHTML = `
+        <path d="M120 0 C120 20, 240 16, 240 36" stroke="${c}" stroke-width="2" fill="none" vector-effect="non-scaling-stroke"/>
+        <path d="M360 0 C360 20, 240 16, 240 36" stroke="${c}" stroke-width="2" fill="none" vector-effect="non-scaling-stroke"/>
+      `;
+    }
+    return svg;
+  }
+
   let prevBooked = false;
-  steps.forEach((step, si) => {
+  steps.forEach((step) => {
     if (step.type === 'city') {
-      // City is green if the previous flight was booked
       addLine(prevBooked);
-      add(mkCityGreen(step.city, prevBooked));
+      add(mkCity(step.city));
     }
     else if (step.type === 'flight') {
       const anyBooked = (step.fedLeg && step.fedLeg.booked) || (step.aniLeg && step.aniLeg.booked);
@@ -381,80 +422,69 @@ function render() {
       prevBooked = anyBooked;
       if (step.both) {
         const fn = document.createElement('div');
-        fn.className = 'flight-node' + (anyBooked ? ' green' : '');
+        fn.className = 'flight-node' + (anyBooked ? ' booked' : '');
         const sharedF = selFlight(step.fedLeg);
-        let leftWho = step.fedLeg.booked ? `<img class="who" src="${FED_IMG}" style="border-color:var(--fed)">` : '';
-        let rightWho = step.aniLeg.booked ? `<img class="who" src="${ANI_IMG}" style="border-color:var(--ani)">` : '';
         if (anyBooked) {
-          fn.innerHTML = `${leftWho}<span class="plane">✈</span><span class="flight-date" style="cursor:pointer">${step.date}</span>${rightWho}`;
+          fn.innerHTML = `<span class="plane">✈</span><span class="flight-date" style="cursor:pointer">${step.date}</span>`;
           fn.onclick = () => showBookingInfoBoth(step.fedLeg, step.aniLeg);
         } else {
-          fn.innerHTML = `${leftWho}<span class="plane" title="Change flight">✈</span><a class="flight-date" href="${searchLink(sharedF)}" target="_blank">${step.date}</a>${rightWho}`;
+          fn.innerHTML = `<span class="plane" title="Change flight">✈</span><a class="flight-date" href="${searchLink(sharedF)}" target="_blank">${step.date}</a>`;
           fn.querySelector('.plane').onclick = (e) => { e.stopPropagation(); openDDBoth(step.fedLeg, step.aniLeg); };
         }
         add(fn);
       } else {
         const leg = step.fedLeg || step.aniLeg;
         const person = step.fedLeg ? 'fed' : 'ani';
-        add(mkFlight(leg, person, anyBooked));
+        add(mkFlight(leg, person));
       }
     }
     else if (step.type === 'branch') {
       addLine();
-      // Fork SVG
-      const forkOut = document.createElementNS('http://www.w3.org/2000/svg','svg');
-      forkOut.setAttribute('class','fork-svg');
-      forkOut.setAttribute('viewBox','0 0 500 24');
-      forkOut.innerHTML = `<path d="M250 0 L125 24" stroke="var(--line)" stroke-width="2" fill="none"/>
-        <path d="M250 0 L375 24" stroke="var(--line)" stroke-width="2" fill="none"/>`;
-      add(forkOut);
+      add(mkForkSVG('out'));
 
-      // Branch container
       const br = document.createElement('div');
       br.className = 'branch';
 
-      // Fed side
-      const fedSide = document.createElement('div');
-      fedSide.className = 'branch-side';
-      step.fedLegs.forEach((leg, i) => {
-        fedSide.appendChild(mkFlight(leg, 'fed'));
-        if (leg.to !== step.mergeCity) {
-          const ln = document.createElement('div'); ln.className = 'line-seg'; fedSide.appendChild(ln);
-          fedSide.appendChild(mkCity(leg.to));
-        }
-        const ln = document.createElement('div'); ln.className = 'line-seg'; fedSide.appendChild(ln);
-      });
+      // Helper to build one branch side
+      // Top line grows to push content to bottom, aligning merge flights across sides
+      function buildSide(legs, person) {
+        const side = document.createElement('div');
+        side.className = 'branch-side';
+        // Top connector — grows to absorb extra space
+        const topLine = document.createElement('div');
+        topLine.className = 'line-seg grow';
+        side.appendChild(topLine);
+        legs.forEach((leg, i) => {
+          side.appendChild(mkFlight(leg, person));
+          if (leg.to !== step.mergeCity) {
+            const ln = document.createElement('div'); ln.className = 'line-seg'; side.appendChild(ln);
+            side.appendChild(mkCity(leg.to));
+          }
+          if (i < legs.length - 1) {
+            const ln = document.createElement('div'); ln.className = 'line-seg'; side.appendChild(ln);
+          }
+        });
+        // Bottom connector — fixed height
+        const botLine = document.createElement('div');
+        botLine.className = 'line-seg';
+        side.appendChild(botLine);
+        return side;
+      }
 
-      // Ani side
-      const aniSide = document.createElement('div');
-      aniSide.className = 'branch-side';
-      step.aniLegs.forEach((leg, i) => {
-        aniSide.appendChild(mkFlight(leg, 'ani'));
-        if (leg.to !== step.mergeCity) {
-          const ln = document.createElement('div'); ln.className = 'line-seg'; aniSide.appendChild(ln);
-          aniSide.appendChild(mkCity(leg.to));
-        }
-        const ln = document.createElement('div'); ln.className = 'line-seg'; aniSide.appendChild(ln);
-      });
+      const fedSide = buildSide(step.fedLegs, 'fed');
+      const aniSide = buildSide(step.aniLegs, 'ani');
 
       br.appendChild(fedSide);
       br.appendChild(aniSide);
       add(br);
 
-      // Merge SVG
-      const forkIn = document.createElementNS('http://www.w3.org/2000/svg','svg');
-      forkIn.setAttribute('class','fork-svg');
-      forkIn.setAttribute('viewBox','0 0 500 24');
-      forkIn.innerHTML = `<path d="M125 0 L250 24" stroke="var(--line)" stroke-width="2" fill="none"/>
-        <path d="M375 0 L250 24" stroke="var(--line)" stroke-width="2" fill="none"/>`;
-      add(forkIn);
+      add(mkForkSVG('in'));
+      prevBooked = false;
     }
   });
 
   const ft = personTotal('fed'), at = personTotal('ani');
-  document.getElementById('total-fed').textContent = '$' + ft.toLocaleString();
-  document.getElementById('total-ani').textContent = '$' + at.toLocaleString();
-  document.getElementById('total-combined').textContent = '$' + (ft + at).toLocaleString();
+  document.getElementById('total-combined').textContent = '$' + (ft + at + AIRBNB_COST).toLocaleString();
 }
 
 // ===== DROPDOWNS =====
@@ -467,11 +497,11 @@ function showBookingInfo(person, leg) {
   const panel = document.getElementById('panel');
   panel.innerHTML = `
     <h3>✈ ${leg.from} → ${leg.to} · ✓ Booked</h3>
-    <div style="padding:12px 16px;display:flex;align-items:center;gap:8px">
+    <div style="padding:12px 20px;display:flex;align-items:center;gap:8px">
       <img src="${img}" style="width:24px;height:24px;border-radius:50%;object-fit:cover">
       <span style="font-weight:700;font-size:0.85rem">${label}</span>
     </div>
-    <div style="padding:0 16px 12px;font-size:0.85rem;line-height:1.8">
+    <div style="padding:0 20px 16px;font-size:0.85rem;line-height:1.8">
       <div><b>${f.al}</b></div>
       <div>${f.dt} · ${f.dep} → ${f.arr} · ${f.dur}</div>
       <div style="color:var(--text-muted)">${f.rt}</div>
@@ -487,17 +517,17 @@ function showBookingInfoBoth(fedLeg, aniLeg) {
   [['fed', fedLeg, FED_IMG, 'Federico'], ['ani', aniLeg, ANI_IMG, 'Anissa']].forEach(([p, leg, img, label]) => {
     const f = selFlight(leg);
     h += `
-      <div style="padding:10px 16px 0;display:flex;align-items:center;gap:8px">
+      <div style="padding:10px 20px 0;display:flex;align-items:center;gap:8px">
         <img src="${img}" style="width:24px;height:24px;border-radius:50%;object-fit:cover">
         <span style="font-weight:700;font-size:0.85rem">${label}</span>
         ${leg.booked ? '<span style="color:var(--green);font-size:0.7rem;font-weight:600">✓ Booked</span>' : '<span style="color:var(--text-muted);font-size:0.7rem">Not booked</span>'}
       </div>
-      <div style="padding:4px 16px 12px;font-size:0.85rem;line-height:1.8">
+      <div style="padding:4px 20px 12px;font-size:0.85rem;line-height:1.8">
         <div><b>${f.al}</b> · ${f.dt} · ${f.dep} → ${f.arr} · ${f.dur}</div>
         ${leg.info ? `<div style="margin-top:4px;padding:6px 10px;background:var(--green-bg);border:1px solid var(--green);border-radius:6px;color:var(--green);font-size:0.78rem">${leg.info}</div>` : ''}
       </div>`;
   });
-  h += `<div style="padding:4px 16px 14px"><a href="${searchLink(selFlight(fedLeg))}" target="_blank" style="color:var(--accent);font-size:0.8rem;text-decoration:none">Search on Google Flights ↗</a></div>`;
+  h += `<div style="padding:4px 20px 16px"><a href="${searchLink(selFlight(fedLeg))}" target="_blank" style="color:var(--accent);font-size:0.8rem;text-decoration:none">Search on Google Flights ↗</a></div>`;
   panel.innerHTML = h;
   document.getElementById('overlay').classList.add('open');
 }
@@ -507,8 +537,6 @@ function openDD(person, leg) {
   if (!fl.length) return;
   const panel = document.getElementById('panel');
   const cheap = Math.min(...fl.map(f=>f.$));
-  const label = person === 'fed' ? 'Federico' : 'Anissa';
-  const img = person === 'fed' ? FED_IMG : ANI_IMG;
 
   let h = `<h3>✈ ${leg.from} → ${leg.to}</h3>`;
   h += personSection(person, leg, fl, cheap);
@@ -520,10 +548,8 @@ function openDDBoth(fedLeg, aniLeg) {
   const panel = document.getElementById('panel');
   const fedFl = flights(fedLeg);
   const aniFl = flights(aniLeg);
-  const from = fedLeg.from;
-  const to = fedLeg.to;
 
-  let h = `<h3>✈ ${from} → ${to}</h3>`;
+  let h = `<h3>✈ ${fedLeg.from} → ${fedLeg.to}</h3>`;
   if (fedFl.length) h += personSection('fed', fedLeg, fedFl, Math.min(...fedFl.map(f=>f.$)));
   if (aniFl.length) h += personSection('ani', aniLeg, aniFl, Math.min(...aniFl.map(f=>f.$)));
   panel.innerHTML = h;
@@ -534,12 +560,12 @@ function personSection(person, leg, fl, cheap) {
   const label = person === 'fed' ? 'Federico' : 'Anissa';
   const img = person === 'fed' ? FED_IMG : ANI_IMG;
   const legIdx = ROUTES[person].indexOf(leg);
-  let h = `<div style="padding:8px 16px 4px;font-size:0.78rem;font-weight:700;color:var(--text-muted);display:flex;align-items:center;gap:6px">
+  let h = `<div style="padding:10px 20px 6px;font-size:0.78rem;font-weight:700;color:var(--text-muted);display:flex;align-items:center;gap:6px">
     <img src="${img}" style="width:20px;height:20px;border-radius:50%;object-fit:cover">${label}
-    <span onclick="toggleBook('${person}',${legIdx})" style="margin-left:auto;cursor:pointer;font-size:0.7rem;padding:2px 8px;border-radius:4px;border:1px solid ${leg.booked?'var(--green)':'var(--border)'};color:${leg.booked?'var(--green)':'var(--text-muted)'};background:${leg.booked?'var(--green-bg)':'transparent'}">${leg.booked?'✓ Booked':'Book'}</span>
+    <span onclick="toggleBook('${person}',${legIdx})" style="margin-left:auto;cursor:pointer;font-size:0.7rem;padding:2px 8px;border-radius:4px;border:1px solid ${leg.booked?'var(--green)':'var(--border)'};color:${leg.booked?'var(--green)':'var(--text-muted)'};background:${leg.booked?'var(--green-bg)':'transparent'};transition:all 0.15s">${leg.booked?'✓ Booked':'Book'}</span>
   </div>`;
   if (leg.booked && leg.info) {
-    h += `<div style="padding:6px 16px;font-size:0.75rem;color:var(--green);background:var(--green-bg);margin:2px 8px 6px;border-radius:6px;border:1px solid var(--green)">${leg.info}</div>`;
+    h += `<div style="padding:6px 20px;font-size:0.75rem;color:var(--green);background:var(--green-bg);margin:2px 12px 6px;border-radius:6px;border:1px solid var(--green)">${leg.info}</div>`;
   }
   fl.forEach(f => {
     const ic = f.$ === cheap, is = f.id === leg.selected;
@@ -561,7 +587,6 @@ function personSection(person, leg, fl, cheap) {
 function pick(p, legIdx, id) {
   ROUTES[p][legIdx].selected = id;
   render();
-  // Re-open dropdown
   const leg = ROUTES[p][legIdx];
   const otherP = p === 'fed' ? 'ani' : 'fed';
   const otherLeg = ROUTES[otherP].find(l => l.from === leg.from && l.to === leg.to);
@@ -585,10 +610,10 @@ function searchLink(f) {
 }
 
 function downloadItinerary() {
-  let t = 'EUROPE TRIP 2026\n' + '═'.repeat(30) + '\n\n';
+  let t = 'EUROPE TRIP 2026\n' + '='.repeat(30) + '\n\n';
   ['fed','ani'].forEach(p => {
     const label = p === 'fed' ? 'FEDERICO' : 'ANISSA';
-    t += `${label} — Total: $${personTotal(p).toLocaleString()}\n` + '─'.repeat(30) + '\n';
+    t += `${label} — Total: $${personTotal(p).toLocaleString()}\n` + '-'.repeat(30) + '\n';
     ROUTES[p].forEach(leg => {
       const f = selFlight(leg);
       t += `${leg.from} — ${leg.date} → ${leg.to}\n`;
