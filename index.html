@@ -352,11 +352,12 @@ function render() {
       const img = person === 'fed' ? FED_IMG : ANI_IMG;
       whoHtml = `<img class="who" src="${img}">`;
     }
-    fn.innerHTML = `${whoHtml}<span class="plane" title="Change flight">✈</span><a class="flight-date" href="${searchLink(f)}" target="_blank" title="Search on Google Flights">${leg.date}</a>`;
-    fn.querySelector('.plane').onclick = (e) => { e.stopPropagation(); openDD(person, leg); };
     if (leg.booked) {
-      const avatar = fn.querySelector('.who');
-      if (avatar) avatar.onclick = (e) => { e.stopPropagation(); window.open(searchLink(f), '_blank'); };
+      fn.innerHTML = `${whoHtml}<span class="plane">✈</span><span class="flight-date" style="cursor:pointer">${leg.date}</span>`;
+      fn.onclick = () => showBookingInfo(person, leg);
+    } else {
+      fn.innerHTML = `${whoHtml}<span class="plane" title="Change flight">✈</span><a class="flight-date" href="${searchLink(f)}" target="_blank">${leg.date}</a>`;
+      fn.querySelector('.plane').onclick = (e) => { e.stopPropagation(); openDD(person, leg); };
     }
     return fn;
   }
@@ -373,16 +374,17 @@ function render() {
         const fn = document.createElement('div');
         fn.className = 'flight-node';
         const sharedF = selFlight(step.fedLeg);
+        const bothBooked = step.fedLeg.booked && step.aniLeg.booked;
+        const anyBooked = step.fedLeg.booked || step.aniLeg.booked;
         let leftWho = step.fedLeg.booked ? `<img class="who" src="${FED_IMG}" style="border-color:var(--fed)">` : '';
         let rightWho = step.aniLeg.booked ? `<img class="who" src="${ANI_IMG}" style="border-color:var(--ani)">` : '';
-        fn.innerHTML = `${leftWho}<span class="plane" title="Change flight">✈</span><a class="flight-date" href="${searchLink(sharedF)}" target="_blank" title="Search on Google Flights">${step.date}</a>${rightWho}`;
-        fn.querySelector('.plane').onclick = (e) => { e.stopPropagation(); openDDBoth(step.fedLeg, step.aniLeg); };
-        // Avatar clicks
-        fn.querySelectorAll('.who').forEach((img, idx) => {
-          const leg = idx === 0 && step.fedLeg.booked ? step.fedLeg : step.aniLeg;
-          const f = selFlight(leg);
-          img.onclick = (e) => { e.stopPropagation(); window.open(searchLink(f), '_blank'); };
-        });
+        if (anyBooked) {
+          fn.innerHTML = `${leftWho}<span class="plane">✈</span><span class="flight-date" style="cursor:pointer">${step.date}</span>${rightWho}`;
+          fn.onclick = () => showBookingInfoBoth(step.fedLeg, step.aniLeg);
+        } else {
+          fn.innerHTML = `${leftWho}<span class="plane" title="Change flight">✈</span><a class="flight-date" href="${searchLink(sharedF)}" target="_blank">${step.date}</a>${rightWho}`;
+          fn.querySelector('.plane').onclick = (e) => { e.stopPropagation(); openDDBoth(step.fedLeg, step.aniLeg); };
+        }
         add(fn);
       } else {
         const leg = step.fedLeg || step.aniLeg;
@@ -448,6 +450,48 @@ function render() {
 
 // ===== DROPDOWNS =====
 function closeDD() { document.getElementById('overlay').classList.remove('open'); }
+
+function showBookingInfo(person, leg) {
+  const f = selFlight(leg);
+  const label = person === 'fed' ? 'Federico' : 'Anissa';
+  const img = person === 'fed' ? FED_IMG : ANI_IMG;
+  const panel = document.getElementById('panel');
+  panel.innerHTML = `
+    <h3>✈ ${leg.from} → ${leg.to} · ✓ Booked</h3>
+    <div style="padding:12px 16px;display:flex;align-items:center;gap:8px">
+      <img src="${img}" style="width:24px;height:24px;border-radius:50%;object-fit:cover">
+      <span style="font-weight:700;font-size:0.85rem">${label}</span>
+    </div>
+    <div style="padding:0 16px 12px;font-size:0.85rem;line-height:1.8">
+      <div><b>${f.al}</b></div>
+      <div>${f.dt} · ${f.dep} → ${f.arr} · ${f.dur}</div>
+      <div style="color:var(--text-muted)">${f.rt}</div>
+      ${leg.info ? `<div style="margin-top:8px;padding:8px 12px;background:var(--green-bg);border:1px solid var(--green);border-radius:8px;color:var(--green);font-size:0.8rem">${leg.info}</div>` : ''}
+      <div style="margin-top:12px"><a href="${searchLink(f)}" target="_blank" style="color:var(--accent);font-size:0.8rem;text-decoration:none">Search on Google Flights ↗</a></div>
+    </div>`;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function showBookingInfoBoth(fedLeg, aniLeg) {
+  const panel = document.getElementById('panel');
+  let h = `<h3>✈ ${fedLeg.from} → ${fedLeg.to} · ✓ Booked</h3>`;
+  [['fed', fedLeg, FED_IMG, 'Federico'], ['ani', aniLeg, ANI_IMG, 'Anissa']].forEach(([p, leg, img, label]) => {
+    const f = selFlight(leg);
+    h += `
+      <div style="padding:10px 16px 0;display:flex;align-items:center;gap:8px">
+        <img src="${img}" style="width:24px;height:24px;border-radius:50%;object-fit:cover">
+        <span style="font-weight:700;font-size:0.85rem">${label}</span>
+        ${leg.booked ? '<span style="color:var(--green);font-size:0.7rem;font-weight:600">✓ Booked</span>' : '<span style="color:var(--text-muted);font-size:0.7rem">Not booked</span>'}
+      </div>
+      <div style="padding:4px 16px 12px;font-size:0.85rem;line-height:1.8">
+        <div><b>${f.al}</b> · ${f.dt} · ${f.dep} → ${f.arr} · ${f.dur}</div>
+        ${leg.info ? `<div style="margin-top:4px;padding:6px 10px;background:var(--green-bg);border:1px solid var(--green);border-radius:6px;color:var(--green);font-size:0.78rem">${leg.info}</div>` : ''}
+      </div>`;
+  });
+  h += `<div style="padding:4px 16px 14px"><a href="${searchLink(selFlight(fedLeg))}" target="_blank" style="color:var(--accent);font-size:0.8rem;text-decoration:none">Search on Google Flights ↗</a></div>`;
+  panel.innerHTML = h;
+  document.getElementById('overlay').classList.add('open');
+}
 
 function openDD(person, leg) {
   const fl = flights(leg);
